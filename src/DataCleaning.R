@@ -15,6 +15,7 @@ Ep_Drugs_PCN <- read.csv('data/Epilepsy_Drugs_By_PCN.csv')
 CCG_ICB_Codes <- read.xlsx('data/CCG_IBS_Region.xlsx')
 PCN_CCG_Codes <- read.xlsx('data/B1357-PCN-Adjusted-Populations-V1.3-updated-31-March.xlsx', sheet = 'PCNs')
 PCN_CCG_Codes2 <- read.xlsx('data/CCG_TO_PCN.xlsx')
+CCG_IMDs <- read.csv('data/CCG_IMDs.csv')
 
 # Data Cleaning PCN/CCGs/ICBs ---------------------------------------------
 
@@ -140,5 +141,11 @@ List_Of_CCGS <- Ep_Prev_CCG %>%
   distinct()
 
 Ep_Drugs_CCG$CCG_Name <- gsub('ICB - ([0-9].*[A-Z]*|[A-Z]*[0-9]*[A-Z]*[0-9]*[A-Z]*)$', 'CCG', as.character(Ep_Drugs_CCG$CCG_Name))
+
+## Adding Index multiple deprivation and Health Deprivation and Disability Decile to EP_Drugs_CCG
+
+Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
+  left_join(CCG_IMDs, by = c('CCG_Name' = 'CCG_Name'))
+
 
 
