@@ -14,7 +14,7 @@ shp@data$ccg20nm <- toupper(shp@data$ccg20nm)
 
 #' Display the map
 #' Params:
-#' 1. dataset,
+#' 1. dataset (shapefile based),
 #' 2. title of the plot
 #' 3. title of the description
 #' 4. (optional) palette ("blue.pal", "red.pal" etc.)
