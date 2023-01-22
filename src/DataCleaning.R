@@ -43,35 +43,31 @@ PCN_CCG_Codes2 <- PCN_CCG_Codes2 %>%
 colnames(CCG_ICB_Codes) <- c('Region', 'ICB_Code', 'ICB_Name', 'CCG_Code', 'CCG_Name')
 
 ## Filling in missing values from xlsx file
-for (j in 1:ncol(CCG_ICB_Codes)) {
-  for (i in 1:nrow(CCG_ICB_Codes)) {
+for (j in seq_len(ncol(CCG_ICB_Codes))) {
+  for (i in seq_len(nrow(CCG_ICB_Codes))) {
     CCG_ICB_Codes[i, j] <- ifelse(is.na(CCG_ICB_Codes[i, j]), CCG_ICB_Codes[i - 1, j], CCG_ICB_Codes[i, j])
   } }
 
 ## Now have a data set containing ICB info for all CCGs
 
-
 # Converting drug PCNs to CCGs --------------------------------------------
 
-## Renamming columns 
+## Renaming columns
 colnames(Ep_Drugs_PCN)[2:5] <- c('PCN_Code', 'PCN_Name', 'Total_Items_Presc', 'Total_Cost')
 
 Ep_Drugs_PCN <- Ep_Drugs_PCN[, 1:5]
 
 ## Joining the datasets
-
 Ep_Drugs_CCG <- Ep_Drugs_PCN %>%
   left_join(PCN_CCG_Codes, by = c('PCN_Code', 'PCN_Name'), all.x = TRUE)
 
 ## Some CCG's remain missing, a second lookup sheet will be used to assign these
-
 Missing_CCGs <- Ep_Drugs_CCG %>%
   filter(is.na(CCG_Code)) %>%
   select(PCN_Code, PCN_Name) %>%
   distinct(PCN_Name, .keep_all = TRUE)
 
 ## Using the second lookup for the missing ID's
-
 Missing_CCGs <- Missing_CCGs %>%
   left_join(PCN_CCG_Codes2, by = 'PCN_Name') %>%
   distinct(PCN_Name, .keep_all = TRUE)
@@ -84,7 +80,6 @@ Missing_CCGs <- Missing_CCGs %>%
 ## Central Telford is in NHS SHROPSHIRE, TELFORD AND WREKIN CCG
 ## Connect health alliance does not exist
 ## NORTH west suffolk PCN is in NHS WEST SUFFOLK CCG
-
 Missing_CCGs[Missing_CCGs$PCN_Name == 'SITTINGBOURNE WEST PCN', 3] <- 'NHS KENT AND MEDWAY CCG'
 Missing_CCGs[Missing_CCGs$PCN_Name == 'HARNESS TEMPLE PCN', 3] <- 'NHS NORTH WEST LONDON CCG'
 Missing_CCGs[Missing_CCGs$PCN_Name == 'FELIXSTOWE PCN', 3] <- 'NHS IPSWICH AND EAST SUFFOLK CCG'
@@ -97,12 +92,10 @@ Missing_CCGs <- Missing_CCGs %>%
   filter(!is.na(CCG_Name))
 
 ## Merging CCGs from the second look up sheet 
-
 Missing_CCGs <- Missing_CCGs %>%
   left_join(Ep_Drugs_PCN, by = c('PCN_Name', 'PCN_Code'))
 
 ## Combing the two datasets so that they can be aggregated by CCG
-
 Missing_CCGs <- Missing_CCGs %>%
   select(date, PCN_Code, PCN_Name, Total_Items_Presc, Total_Cost, CCG_Name)
 
@@ -114,22 +107,18 @@ Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   bind_rows(Missing_CCGs)
 
 ## Double checking there are no duplicate values across: date, and PCN name. all good
-
 Ep_Drugs_CCG %>%
   group_by(PCN_Name) %>%
   filter(duplicated(date))
 
 ## Now aggregating across PCNs so we have CCG level data 
-
 Ep_Drugs_CCG <- aggregate(Ep_Drugs_CCG[, 4:5], by = list(Ep_Drugs_CCG$date,
                                                          Ep_Drugs_CCG$CCG_Name), FUN = sum)
 
 ## Changing the column names 
-
 colnames(Ep_Drugs_CCG) <- c('date', 'CCG_Name', 'Total_Items_Presc', 'Total_Cost')
 
 ## Still need to deal with some of the CCG character strings
-
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   mutate(CCG_Name = toupper(CCG_Name))
 
@@ -143,7 +132,6 @@ List_Of_CCGS <- Ep_Prev_CCG %>%
 Ep_Drugs_CCG$CCG_Name <- gsub('ICB - ([0-9].*[A-Z]*|[A-Z]*[0-9]*[A-Z]*[0-9]*[A-Z]*)$', 'CCG', as.character(Ep_Drugs_CCG$CCG_Name))
 
 ## Adding Index multiple deprivation and Health Deprivation and Disability Decile to EP_Drugs_CCG
-
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   left_join(CCG_IMDs, by = c('CCG_Name' = 'CCG_Name'))
 
