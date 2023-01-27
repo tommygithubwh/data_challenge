@@ -147,12 +147,12 @@ Ep_Drugs_Total <- Ep_Drugs_Total %>%
   mutate(Year = year(Date))
 
 # Epilepsy Prevalence -----------------------------------------------------
+
 detach(package:plyr)
 Ep_Prev_Total_Eng <- Ep_Prev_CCG %>% 
   filter(Area.Type == 'England' & Category == '') %>% 
   mutate(Year = substr(Time.period, 1, 4) ) %>% 
   distinct(Year, .keep_all = TRUE)
-
 
 Ep_Drugs_Total <- Ep_Drugs_Total %>% 
   inner_join(Ep_Prev_Total_Eng %>% 
@@ -189,4 +189,17 @@ Ep_Prev_CCG <- Ep_Prev_CCG %>%
   select(Area.Name, Value, Lower.CI.95.0.limit, Upper.CI.95.0.limit, 
          Count, Denominator, Time.period) %>% 
   rename(CCG_Name = Area.Name)
+
+PCN_CCG_Codes <- PCN_CCG_Codes %>% 
+  mutate(Lower.CI.95.0.limit = NA, Upper.CI.95.0.limit =NA,  Count= NA, Time.period = 2022, Prev = NA) %>% 
+  select(-PCN_Population, CCG_Name, Prev, Lower.CI.95.0.limit, Upper.CI.95.0.limit, 
+         Count, CCG_Population, Time.period)
+
+Ep_Prev_CCG <- Ep_Prev_CCG %>% 
+  rename(CCG_Population = Denominator, Prev = Value) %>% 
+  select(CCG_Name, CCG_Population, Lower.CI.95.0.limit, Upper.CI.95.0.limit, Count, Time.period, Prev)
+
+Ep_Prev_CCG <- Ep_Prev_CCG %>% 
+  mutate(Time.period = as.numeric(substr(Time.period, 1, 4))) %>% 
+  bind_rows(PCN_CCG_Codes)
 
