@@ -160,6 +160,9 @@ Ep_Drugs_Total <- Ep_Drugs_Total %>%
                mutate(Year = as.numeric(Year))) %>% 
   dplyr::rename(Total_Presc = x)
 
+Ep_Drugs_Total <- Ep_Drugs_Total %>% 
+  mutate(Presc_Per_Cases = Total_Presc/Count,
+         Presc_Per_Population = (Total_Presc/Denominator)*1000)
 
   
 
