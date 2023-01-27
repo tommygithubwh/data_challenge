@@ -83,6 +83,7 @@ ggplot(Ep_Drugs_Total, aes(x = Date))+
   geom_line(aes(y=Presc_Per_Cases, color="Prescriptions per case")) +
   geom_line(aes(y=Presc_Per_Population, color="Prescriptions per 1000 population")) + 
   xlab("")+
+  ylab("")+
   labs(color="Legend text")
 
 
