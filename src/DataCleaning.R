@@ -135,5 +135,11 @@ Ep_Drugs_CCG$CCG_Name <- gsub('ICB - ([0-9].*[A-Z]*|[A-Z]*[0-9]*[A-Z]*[0-9]*[A-Z
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   left_join(CCG_IMDs, by = c('CCG_Name' = 'CCG_Name'))
 
+# Epilepsy Prevalence -----------------------------------------------------
+
+Ep_Prev_Total_Eng <- Ep_Prev_CCG %>% 
+  filter(Area.Type == 'England' & Category == '') %>% 
+  mutate(Year = substr(Time.period, 1, 4) ) %>% 
+  distinct(Year, .keep_all = TRUE)
 
 

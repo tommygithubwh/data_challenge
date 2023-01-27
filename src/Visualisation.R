@@ -51,6 +51,8 @@ ep_drugs_total_presc_shape <- shp@data %>%
 display_map(ep_drugs_total_cost_shape, "Epilepsy drugs (total cost per CCG)", "Cost/CCG")
 display_map(ep_drugs_total_presc_shape, "Epilepsy drugs (total number of prescriptions per CCG)", "Prescriptions/CCG", "blue.pal")
 
+## Heat map before covid, heatmap after covid
+
 # Time series plots -------------------------------------------------------
 
 ## Total prescriptions
@@ -71,7 +73,16 @@ ggplot(Ep_Drugs_Total, aes(x=Date, y=x)) +
 
 ## Prevalence over time 
 
-
+ggplot(Ep_Prev_Total_Eng, aes(x=Year, y=Value)) +
+  geom_line(group = 1, color="#69b3a2")+
+  geom_point(color="#69b3a2")+
+  xlab("") +
+  ylab('Epilepsy prevalence in England')+
+  ylim(c(0.6,0.85))+
+  geom_ribbon( aes(x = 1:length(Year), ymin = Lower.CI.95.0.limit, ymax = Upper.CI.95.0.limit), 
+              alpha=0.1, 
+              linetype="dashed",
+              color="grey")
 
 
 
