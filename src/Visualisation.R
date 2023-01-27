@@ -57,13 +57,6 @@ display_map(ep_drugs_total_presc_shape, "Epilepsy drugs (total number of prescri
 
 ## Total prescriptions
 
-Ep_Drugs_Total <- aggregate(Ep_Drugs_CCG$Total_Items_Presc, by =  list(Ep_Drugs_CCG$date), FUN = sum)
-
-Ep_Drugs_Total <- Ep_Drugs_Total %>% 
-  mutate(Date = as.Date(Group.1))
-
-typeof(Ep_Drugs_Total$Date)
-
 ggplot(Ep_Drugs_Total, aes(x=Date, y=x)) +
   geom_line( color="#69b3a2") + 
   xlab("") +

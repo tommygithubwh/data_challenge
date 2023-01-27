@@ -135,6 +135,17 @@ Ep_Drugs_CCG$CCG_Name <- gsub('ICB - ([0-9].*[A-Z]*|[A-Z]*[0-9]*[A-Z]*[0-9]*[A-Z
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   left_join(CCG_IMDs, by = c('CCG_Name' = 'CCG_Name'))
 
+Ep_Drugs_CCG <- Ep_Drugs_CCG %>% 
+  mutate(Year = year(date))
+
+## Total prescriptions 
+
+Ep_Drugs_Total <- aggregate(Ep_Drugs_CCG$Total_Items_Presc, by =  list(Ep_Drugs_CCG$date), FUN = sum)
+
+Ep_Drugs_Total <- Ep_Drugs_Total %>% 
+  mutate(Date = as.Date(Group.1)) %>% 
+  mutate(Year = year(Date))
+
 # Epilepsy Prevalence -----------------------------------------------------
 
 Ep_Prev_Total_Eng <- Ep_Prev_CCG %>% 
@@ -142,4 +153,13 @@ Ep_Prev_Total_Eng <- Ep_Prev_CCG %>%
   mutate(Year = substr(Time.period, 1, 4) ) %>% 
   distinct(Year, .keep_all = TRUE)
 
+
+Ep_Drugs_Total <- Ep_Drugs_Total %>% 
+  inner_join(Ep_Prev_Total_Eng %>% 
+               select(13:19, Year) %>% 
+               mutate(Year = as.numeric(Year))) %>% 
+  dplyr::rename(Total_Presc = x)
+
+
+  
 
