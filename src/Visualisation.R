@@ -1,5 +1,5 @@
 source(file = "src/DataCleaning.R")
-packages <- c("dplyr", "stringr", "tidyr", "ggplot2", "grid", "gridExtra", "ggpubr", "lubridate",
+packages <- c("dplyr", "stringr", "tidyr", "ggplot2", "grid", "gridExtra", "ggpubr", "lubridate","hrbrthemes",
               "maps", "mapdata", "maptools", "rgdal", "leaflet", "ggmap", "rgeos", "broom", "plyr", "cartography")
 install.packages(setdiff(packages, rownames(installed.packages())))
 lapply(packages, library, character.only = TRUE, quietly = TRUE)
@@ -49,4 +49,30 @@ ep_drugs_total_presc_shape <- shp@data %>%
 
 #' Display maps: uncomment the ones you need
 display_map(ep_drugs_total_cost_shape, "Epilepsy drugs (total cost per CCG)", "Cost/CCG")
-#display_map(ep_drugs_total_presc_shape, "Epilepsy drugs (total number of prescriptions per CCG)", "Prescriptions/CCG", "blue.pal")
+display_map(ep_drugs_total_presc_shape, "Epilepsy drugs (total number of prescriptions per CCG)", "Prescriptions/CCG", "blue.pal")
+
+# Time series plots -------------------------------------------------------
+
+## Total prescriptions
+
+Ep_Drugs_Total <- aggregate(Ep_Drugs_CCG$Total_Items_Presc, by =  list(Ep_Drugs_CCG$date), FUN = sum)
+
+Ep_Drugs_Total <- Ep_Drugs_Total %>% 
+  mutate(Date = as.Date(Group.1))
+
+typeof(Ep_Drugs_Total$Date)
+
+ggplot(Ep_Drugs_Total, aes(x=Date, y=x)) +
+  geom_line( color="#69b3a2") + 
+  xlab("") +
+  ylab("Total Prescriptions in England") +
+  theme_ipsum() +
+  theme(axis.text.x=element_text(angle=60, hjust=1)) 
+
+## Prevalence over time 
+
+
+
+
+
+
