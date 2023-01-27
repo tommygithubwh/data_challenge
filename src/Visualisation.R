@@ -57,7 +57,7 @@ display_map(ep_drugs_total_presc_shape, "Epilepsy drugs (total number of prescri
 
 ## Total prescriptions
 
-ggplot(Ep_Drugs_Total, aes(x=Date, y=x)) +
+ggplot(Ep_Drugs_Total, aes(x=Date, y=Total_Presc)) +
   geom_line( color="#69b3a2") + 
   xlab("") +
   ylab("Total Prescriptions in England") +
