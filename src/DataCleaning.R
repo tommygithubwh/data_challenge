@@ -23,6 +23,7 @@ CCG_IMDs <- read.csv('data/CCG_IMDs.csv')
 colnames(PCN_CCG_Codes) <- PCN_CCG_Codes[1,]
 
 ## Selecting necessary rows and cols
+PCN_CCG_Codes3 <- PCN_CCG_Codes[-1,]
 PCN_CCG_Codes <- PCN_CCG_Codes[-1, c(1, 2, 5, 6)]
 
 ## Renaming columns 
@@ -59,7 +60,8 @@ Ep_Drugs_PCN <- Ep_Drugs_PCN[, 1:5]
 
 ## Joining the datasets
 Ep_Drugs_CCG <- Ep_Drugs_PCN %>%
-  left_join(PCN_CCG_Codes, by = c('PCN_Code', 'PCN_Name'), all.x = TRUE)
+  left_join(PCN_CCG_Codes, by = c('PCN_Code', 'PCN_Name'), all.x = TRUE) %>% 
+  dplyr::mutate(Date = as.Date(date))
 
 ## Some CCG's remain missing, a second lookup sheet will be used to assign these
 Missing_CCGs <- Ep_Drugs_CCG %>%
@@ -72,7 +74,7 @@ Missing_CCGs <- Missing_CCGs %>%
   left_join(PCN_CCG_Codes2, by = 'PCN_Name') %>%
   distinct(PCN_Name, .keep_all = TRUE)
 
-## Assumptions made:  PCN Sittingbourne and Sittingbourne West are in the same CCG
+## Assumptions made::  PCN Sittingbourne and Sittingbourne West are in the same CCG
 ## Harness Temple PCN is in the same CCG as Harness South and North PCN 
 ## Felixstowe PCN is in NHS IPSWICH AND EAST SUFFOLK CCG
 ## Central southport is in the same CCG as Southport and formby
@@ -106,7 +108,7 @@ Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   bind_rows(Missing_CCGs)
 
-## Double checking there are no duplicate values across: date, and PCN name. all good
+## Double checking there are no duplicate values across:: date, and PCN name. all good
 Ep_Drugs_CCG %>%
   group_by(PCN_Name) %>%
   filter(duplicated(date))
@@ -120,12 +122,12 @@ colnames(Ep_Drugs_CCG) <- c('date', 'CCG_Name', 'Total_Items_Presc', 'Total_Cost
 
 ## Still need to deal with some of the CCG character strings
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
-  mutate(CCG_Name = toupper(CCG_Name))
+  dplyr::mutate(CCG_Name = toupper(CCG_Name))
 
 table(Ep_Drugs_CCG$CCG_Name)
 
 List_Of_CCGS <- Ep_Prev_CCG %>%
-  mutate(CCG_Name_Prev = toupper(Area.Name)) %>%
+  dplyr::mutate(CCG_Name_Prev = toupper(Area.Name)) %>%
   select(CCG_Name_Prev) %>%
   distinct()
 
@@ -136,50 +138,47 @@ Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   left_join(CCG_IMDs, by = c('CCG_Name' = 'CCG_Name'))
 
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>% 
-  mutate(Year = year(date))
+  dplyr::mutate(Year = year(date), Date = as.Date(date))
+  
 
 ## Total prescriptions 
 
 Ep_Drugs_Total <- aggregate(Ep_Drugs_CCG$Total_Items_Presc, by =  list(Ep_Drugs_CCG$date), FUN = sum)
 
 Ep_Drugs_Total <- Ep_Drugs_Total %>% 
-  mutate(Date = as.Date(Group.1)) %>% 
-  mutate(Year = year(Date))
+  dplyr::mutate(Date = as.Date(Group.1)) %>% 
+  dplyr::mutate(Year = year(Date))
 
 # Epilepsy Prevalence -----------------------------------------------------
 
 detach(package:plyr)
 Ep_Prev_Total_Eng <- Ep_Prev_CCG %>% 
   filter(Area.Type == 'England' & Category == '') %>% 
-  mutate(Year = substr(Time.period, 1, 4) ) %>% 
+  dplyr::mutate(Year = substr(Time.period, 1, 4) ) %>% 
   distinct(Year, .keep_all = TRUE)
 
 Ep_Drugs_Total <- Ep_Drugs_Total %>% 
   inner_join(Ep_Prev_Total_Eng %>% 
                select(13:19, Year) %>% 
-               mutate(Year = as.numeric(Year))) %>% 
+               dplyr::mutate(Year = as.numeric(Year))) %>% 
   dplyr::rename(Total_Presc = x)
 
 Ep_Drugs_Total <- Ep_Drugs_Total %>% 
-  mutate(Presc_Per_Cases = Total_Presc/Count,
+  dplyr::mutate(Presc_Per_Cases = Total_Presc/Count,
          Presc_Per_Population = (Total_Presc/Denominator)*1000)
 
 # Population per CCG  -----------------------------------------------------
 
 ## two calculations for popualtion by CCG
 
-colnames(PCN_CCG_Codes) <- PCN_CCG_Codes[1,]
-
-PCN_CCG_Codes <- PCN_CCG_Codes[-1,]
-
-PCN_CCG_Codes <- PCN_CCG_Codes %>% 
+PCN_CCG_Codes3 <- PCN_CCG_Codes3 %>% 
   dplyr::rename(CCG_Name = `Parent CCG 1 Jan 22`, 
                 PCN_Population = `PCN adjusted population 1 Jan 22`) %>% 
   select(CCG_Name, PCN_Population)
 
-PCN_CCG_Codes <- PCN_CCG_Codes %>% 
+PCN_CCG_Codes3<- PCN_CCG_Codes3 %>% 
   group_by(CCG_Name) %>% 
-  mutate(CCG_Population = sum(as.numeric(PCN_Population))) %>% 
+  dplyr::mutate(CCG_Population = sum(as.numeric(PCN_Population))) %>% 
   distinct(CCG_Name, .keep_all = TRUE)
 
 ## Adding prevalence by CCG 
@@ -188,18 +187,18 @@ Ep_Prev_CCG <- Ep_Prev_CCG %>%
   filter(Area.Name != 'England') %>% 
   select(Area.Name, Value, Lower.CI.95.0.limit, Upper.CI.95.0.limit, 
          Count, Denominator, Time.period) %>% 
-  rename(CCG_Name = Area.Name)
+  dplyr::rename(CCG_Name = Area.Name)
 
-PCN_CCG_Codes <- PCN_CCG_Codes %>% 
-  mutate(Lower.CI.95.0.limit = NA, Upper.CI.95.0.limit =NA,  Count= NA, Time.period = 2022, Prev = NA) %>% 
+PCN_CCG_Codes3 <- PCN_CCG_Codes3 %>% 
+  dplyr::mutate(Lower.CI.95.0.limit = NA, Upper.CI.95.0.limit =NA,  Count= NA, Time.period = 2022, Prev = NA) %>% 
   select(-PCN_Population, CCG_Name, Prev, Lower.CI.95.0.limit, Upper.CI.95.0.limit, 
          Count, CCG_Population, Time.period)
 
 Ep_Prev_CCG <- Ep_Prev_CCG %>% 
-  rename(CCG_Population = Denominator, Prev = Value) %>% 
+  dplyr::rename(CCG_Population = Denominator, Prev = Value) %>% 
   select(CCG_Name, CCG_Population, Lower.CI.95.0.limit, Upper.CI.95.0.limit, Count, Time.period, Prev)
 
 Ep_Prev_CCG <- Ep_Prev_CCG %>% 
-  mutate(Time.period = as.numeric(substr(Time.period, 1, 4))) %>% 
+  dplyr::mutate(Time.period = as.numeric(substr(Time.period, 1, 4))) %>% 
   bind_rows(PCN_CCG_Codes)
 
