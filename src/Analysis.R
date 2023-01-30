@@ -43,15 +43,17 @@ ggplot(Ep_Drugs_Total, aes(x = Date, y = x)) +
 sctest(Ep_Drugs_Total$x ~ Ep_Drugs_Total$Date, type = "Chow", point = 30)
 # The Chow test attempts to determine if there is a structural break in the data at some point.
 # In this case, it is the volume of drugs before and after covid in the UK (point 30 or April 2020)
-# F = 2.9248, p-value = 0.06192.  We have insufficient evidence to reject the null of a structural break before and after covid
+# F = 2.9248, p-value = 0.06192.  We have insufficient evidence to reject the null of no structural break before and after covid
 
 
 # Chow test for NICE epilepsy guidelines April 2022
 sctest(Ep_Drugs_Total$x ~ Ep_Drugs_Total$Date, type = "Chow", point = 54)
 
-# F = 0.23881, p-value = 0.7884.   We have insufficient evidence to reject the null of a structural break before and after NICE
+# F = 0.23881, p-value = 0.7884.   We have insufficient evidence to reject the null of no structural break before and after NICE
 # Guidelines but sample for the period after the guidelines is small
 
+# The Chow Tests should help us answer the second research question: 
+# "Have patterns in prescribing changed after: (1) the start of the COVID-19 pandemic, or (2) the NICE 2022 guideline for epilepsy?"
 
 
 
