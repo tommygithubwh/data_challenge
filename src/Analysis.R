@@ -18,7 +18,7 @@ Ep_Drugs_Total = subset(Ep_Drugs_Total, select = -c(Group.1,Year) ) # drops the 
 
 Ep_Drugs_Total_time <- Ep_Drugs_Total[, "x"] # selects the column (volume) to be forecast
 
-Arima <- auto.arima((Ep_Drugs_Total_time),0,1,1, 0,1,1,12)
+Arima <- auto.arima(Ep_Drugs_Total_time) # Returns best ARIMA model 
 
 summary(Arima)
 
