@@ -31,7 +31,7 @@ colnames(PCN_CCG_Codes) <- c('PCN_Code', 'PCN_Name', 'CCG_Code', 'CCG_Name')
 
 ## Need to convert ICBs to CCG
 ## selecting necessary columns and rows 
-CCG_ICB_Codes <- CCG_ICB_Codes[-c(1, 2), 2:6]
+CCG_ICB_Codes <- CCG_ICB_Codes[-1, 2:6]
 
 ## Cleaning the second lookup named PCN_CCG_Codes 2
 colnames(PCN_CCG_Codes2) <- c('CCG_Name', 'PCN_Name')
@@ -47,7 +47,8 @@ colnames(CCG_ICB_Codes) <- c('Region', 'ICB_Code', 'ICB_Name', 'CCG_Code', 'CCG_
 for (j in seq_len(ncol(CCG_ICB_Codes))) {
   for (i in seq_len(nrow(CCG_ICB_Codes))) {
     CCG_ICB_Codes[i, j] <- ifelse(is.na(CCG_ICB_Codes[i, j]), CCG_ICB_Codes[i - 1, j], CCG_ICB_Codes[i, j])
-  } }
+  } 
+  }
 
 ## Now have a data set containing ICB info for all CCGs
 
@@ -151,7 +152,6 @@ Ep_Drugs_Total <- Ep_Drugs_Total %>%
 
 # Epilepsy Prevalence -----------------------------------------------------
 
-detach(package:plyr)
 Ep_Prev_Total_Eng <- Ep_Prev_CCG %>% 
   filter(Area.Type == 'England' & Category == '') %>% 
   dplyr::mutate(Year = substr(Time.period, 1, 4) ) %>% 
@@ -201,4 +201,65 @@ Ep_Prev_CCG <- Ep_Prev_CCG %>%
 Ep_Prev_CCG <- Ep_Prev_CCG %>% 
   dplyr::mutate(Time.period = as.numeric(substr(Time.period, 1, 4))) %>% 
   bind_rows(PCN_CCG_Codes)
+
+
+# Drugs per region  -------------------------------------------------------
+
+## Want to look at total items/cost by region
+
+CCG_ICB_Codes <- CCG_ICB_Codes %>% 
+  mutate_at(vars(Region, ICB_Name, CCG_Name), ~toupper(.))
+
+Ep_Drugs_ICB <- Ep_Drugs_ICB[,-c(2,6,7)]
+
+colnames(Ep_Drugs_ICB) <- c('Date', 'ICB_Name', 'Total_Presc', 'Total_Cost')
+
+## Replacing integrated care board with ICB 
+
+Ep_Drugs_ICB$ICB_Name <- gsub('INTEGRATED CARE BOARD', 'ICB', Ep_Drugs_ICB$ICB_Name)
+
+Ep_Drugs_ICB <- Ep_Drugs_ICB %>% 
+  inner_join(CCG_ICB_Codes %>% 
+               select(ICB_Name, Region))
+
+Ep_Prev_ICB <- Ep_Prev_ICB %>% 
+  dplyr::select(Area.Name, Area.Type, Time.period, Value, Count, Denominator) %>% 
+  filter(Area.Type == 'ICBs') %>% 
+  dplyr::rename(ICB_Name = Area.Name) %>% 
+  dplyr::mutate(Year = as.numeric(substr(Time.period, 1, 4)), 
+                ICB_Name = toupper(ICB_Name)) 
+
+Ep_Prev_ICB$ICB_Name <- gsub('INTEGRATED CARE BOARD', 'ICB', Ep_Prev_ICB$ICB_Name)
+
+## ICB Drugs per Year 
+
+Ep_Drugs_ICB <- Ep_Drugs_ICB %>% 
+  mutate(Year = as.numeric(substr(Date, 1, 4)))
+
+Ep_Drugs_ICB_Year <- aggregate(Ep_Drugs_ICB[, 3:4], by = list(Ep_Drugs_ICB$Year,
+                                                     Ep_Drugs_ICB$ICB_Name), FUN = sum)
+
+colnames(Ep_Drugs_ICB_Year)[1:2] <- c('Year', 'ICB_Name')
+
+Ep_Prev_ICB <- Ep_Prev_ICB %>% 
+  dplyr::rename(Prev = Value, Tot_Epi = Count,
+                Tot_Pop = Denominator)
+  
+Ep_Drugs_ICB_Year <- Ep_Drugs_ICB_Year %>% 
+  left_join(CCG_ICB_Codes %>% 
+              select(ICB_Name, Region))
+
+Ep_Prev_ICB$ICB_Name <- substr(Ep_Prev_ICB$ICB_Name, 1, nchar(Ep_Prev_ICB$ICB_Name)-1)
+
+Ep_Drugs_ICB <- Ep_Drugs_ICB %>% 
+  left_join(CCG_ICB_Codes %>% 
+              select(ICB_Name, Region))
+
+Ep_Prev_ICB <- Ep_Prev_ICB %>% 
+  left_join(CCG_ICB_Codes %>% 
+              dplyr::select(Region, ICB_Name))
+
+
+# Now turn to region  -----------------------------------------------------
+
 
