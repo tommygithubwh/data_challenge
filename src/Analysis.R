@@ -20,7 +20,7 @@ Arima_Vol <- auto.arima(Ep_Drugs_Total_Vol) # Returns best ARIMA model
 
 summary(Arima_Vol)
 
-Predictions_Vol <- forecast(Arima_vol, h=24) # Predicts the next 24 time points
+Predictions_Vol <- forecast(Arima_Vol, h=24) # Predicts the next 24 time points
 
 plot(Predictions_Vol) # basic graph with CIs
 
@@ -78,12 +78,29 @@ sctest(Ep_Drugs_Total$Total_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 
 
 # To join Ep_Prev_CCG and Ep_Drugs_CCG to get CCGs by volume and cost by pop and prevalence
 
+## Reading in the data from temp Excel file which has the matching CCGs for Ep_Prev_CCG and Ep_Drugs_CCG  
+## When have time can do the match in R
+ 
+Ep_Prev_CCG_match <- read.csv('Ep_Prev_CCG_match.csv')
+
+Ep_Prev_Drugs <- inner_join(Ep_Prev_CCG_match, Ep_Drugs_CCG , by = "CCG_Name") 
+
+Ep_Prev_Drugs_2022 <- subset(Ep_Prev_Drugs, Time.period == 2020) # Selects only prev from 2020 (latest)
+
+Ep_Prev_Drugs_2022 <- subset(Ep_Prev_Drugs_2022, Year == 2022) # Selects only those with 2022 by volume or cost
+
+Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>% group_by(CCG_Name) %>% mutate(vol= sum(Total_Items_Presc)) # Creating a new column 
+# with total items prescribed by CCG for 2022
+
+Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022  %>%
+  mutate(Total_items_by_pop = vol / CCG_Population) # Creates a new column with total 2022 prescriptions by CCG population
 
 
+Ep_Prev_Drugs_2022 = Ep_Prev_Drugs_2022[order(Ep_Prev_Drugs_2022$Total_items_by_pop, decreasing = TRUE), ]
 
+View(Ep_Prev_Drugs_2022)
 
-
-
+# NHS Lincolnshire has the highest prescription per population for 2022
 
 
 
