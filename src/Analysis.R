@@ -81,7 +81,7 @@ sctest(Ep_Drugs_Total$Total_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 
 ## Reading in the data from temp Excel file which has the matching CCGs for Ep_Prev_CCG and Ep_Drugs_CCG  
 ## When have time can do the match in R
  
-Ep_Prev_CCG_match <- read.csv('Ep_Prev_CCG_match.csv')
+Ep_Prev_CCG_match <- read.csv('data/Ep_Prev_CCG_match.csv')
 
 Ep_Prev_Drugs <- inner_join(Ep_Prev_CCG_match, Ep_Drugs_CCG , by = "CCG_Name") 
 
