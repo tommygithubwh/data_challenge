@@ -72,14 +72,18 @@ sctest(Ep_Drugs_Total$Total_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 
 
 
 
-#######################################################
-# Descriptive statistics                              #
-#######################################################
+##########################################################################
+# Descriptive statistics: 2022 prescriptions volume by CCG by population #
+##########################################################################
+
+
+# 
 
 # To join Ep_Prev_CCG and Ep_Drugs_CCG to get CCGs by volume and cost by pop and prevalence
 
 ## Reading in the data from temp Excel file which has the matching CCGs for Ep_Prev_CCG and Ep_Drugs_CCG  
 ## When have time can do the match in R
+### Have made some assumptions on matching CCGs, used closest on occasions.  Have kept the old column (CCG_Name_Prev) so people can compare
  
 Ep_Prev_CCG_match <- read.csv('data/Ep_Prev_CCG_match.csv')
 
@@ -98,9 +102,28 @@ Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022  %>%
 
 Ep_Prev_Drugs_2022 = Ep_Prev_Drugs_2022[order(Ep_Prev_Drugs_2022$Total_items_by_pop, decreasing = TRUE), ]
 
-View(Ep_Prev_Drugs_2022)
+
 
 # NHS Lincolnshire has the highest prescription per population for 2022
+
+
+########################################################################
+# Descriptive statistics: 2022 prescriptions cost by CCG by population #
+########################################################################
+
+Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>% group_by(CCG_Name) %>% mutate(cost= sum(Total_Cost)) # Creating a new column 
+# with total items cost by CCG for 2022
+
+Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022  %>%
+  mutate(Total_cost_by_pop = cost / CCG_Population) # Creates a new column with total 2022 cost by CCG population
+
+Ep_Prev_Drugs_2022 = Ep_Prev_Drugs_2022[order(Ep_Prev_Drugs_2022$Total_cost_by_pop, decreasing = TRUE), ]
+
+View(Ep_Prev_Drugs_2022)
+
+# NHS Lincolnshire also has the highest cost per population for 2022
+
+
 
 
 
