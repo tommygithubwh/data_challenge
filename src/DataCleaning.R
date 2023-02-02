@@ -259,7 +259,25 @@ Ep_Prev_ICB <- Ep_Prev_ICB %>%
   left_join(CCG_ICB_Codes %>% 
               dplyr::select(Region, ICB_Name))
 
+## Prevalence at the ICB level
 
-# Now turn to region  -----------------------------------------------------
+Ep_Prev_ICB <-  Ep_Prev_ICB %>% 
+  distinct(Year, ICB_Name, .keep_all = TRUE) 
 
+## Prevalence at the regional level 
 
+Ep_Prev_Region <- aggregate(Ep_Prev_ICB[,5:6], by = list(Ep_Prev_ICB$Year,
+                                          Ep_Prev_ICB$Region), FUN = sum)
+
+colnames(Ep_Prev_Region)[1:2] <- c('Year', 'Region')
+
+Ep_Prev_Region <- Ep_Prev_Region %>% 
+  mutate(Prev = Tot_Epi/Tot_Pop)
+
+## Drugs at the regional level 
+
+Ep_Drugs_Region_Year <- aggregate(Ep_Drugs_ICB_Year[,3:4], by = list(Ep_Drugs_ICB_Year$Year,
+                                                                     Ep_Drugs_ICB_Year$Region),
+                                  FUN = sum)
+
+colnames(Ep_Drugs_Region_Year)[1:2] <- c('Year', 'Region') 
