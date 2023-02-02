@@ -88,4 +88,14 @@ ggplot(Ep_Drugs_Total, aes(x = Date))+
   labs(color="Legend text")
 
 
+# stacked area chart - drugs per region over time
+ggplot(Ep_Drugs_Region_Year, aes(x=Year, y=Total_Presc, fill=Region)) + 
+  geom_area()
+
+ggplot(Ep_Drugs_Region_Year, aes(x=Year, y=Total_Cost, fill=Region)) + 
+  geom_area()
+
+
+ggplot(Ep_Prev_Region, aes(x=Year, y=Prev, fill=Region)) + 
+  geom_area()
 
