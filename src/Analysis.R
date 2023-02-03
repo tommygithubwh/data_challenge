@@ -10,28 +10,33 @@ rm(packages)
 #############################################################
 
 
-##Reading in the data (from Data.Cleaning.R)
+Ep_Drugs_Total_Temp <- read_csv('data/Ep_Drugs_Vol_Cost_up_to_Oct_2022_temp.csv')
+# Reading in data from temp csv which has total drugs prescribing up to 2022 (current Ep_drugs_Total is only up to 2021)
 
-### ARIMA for drugs volume
+## ARIMA for drugs volume
 
-Ep_Drugs_Total_Vol <- Ep_Drugs_Total[, "Total_Presc"] # selects the column (volume) to be forecast
+Ep_Drugs_Total_Vol <- Ep_Drugs_Total_Temp[, "Total_Presc"] # selects the column (volume) to be forecast
 
 Arima_Vol <- auto.arima(Ep_Drugs_Total_Vol) # Returns best ARIMA model 
 
 summary(Arima_Vol)
 
-Predictions_Vol <- forecast(Arima_Vol, h=24) # Predicts the next 24 time points
+Predictions_Vol <- forecast(Arima_Vol, h=12) # Predicts the next 12 time points
 
-plot(Predictions_Vol) # basic graph with CIs
+plot(Predictions_Vol, main ="ARIMA forecast of anti-epileptic prescriptions", xlab="Time (months)", 
+     ylab="Total anti-epileptic prescriptions") # basic graph with CIs
 
+##Reading in the data (from Data.Cleaning.R)
 
 #############################################################
 # Draft script for SARIMA forecast on anti-epileptic volume # 
 #############################################################
 
+Ep_Drugs_Total_Vol <- as.numeric(unlist(Ep_Drugs_Total_Vol))
+
 Sarima_Vol <-auto.sarima(Ep_Drugs_Total_Vol,seasonal = TRUE, iter = 2000,chains = 4)
 
-Predictions_Vol_Sarima <- forecast(Sarima_Vol,h=24) # Predicts next 24 time points
+Predictions_Vol_Sarima <- forecast(Sarima_Vol,h=12) # Predicts next 24 time points
 
 plot(Sarima_Vol) # plots the Sarima model
        
