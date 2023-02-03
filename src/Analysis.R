@@ -82,8 +82,6 @@ sctest(Ep_Drugs_Total$Total_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 
 ##########################################################################
 
 
-# 
-
 # To join Ep_Prev_CCG and Ep_Drugs_CCG to get CCGs by volume and cost by pop and prevalence
 
 ## Reading in the data from temp Excel file which has the matching CCGs for Ep_Prev_CCG and Ep_Drugs_CCG  
@@ -123,6 +121,10 @@ Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022  %>%
   mutate(Total_cost_by_pop = cost / CCG_Population) # Creates a new column with total 2022 cost by CCG population
 
 Ep_Prev_Drugs_2022 = Ep_Prev_Drugs_2022[order(Ep_Prev_Drugs_2022$Total_cost_by_pop, decreasing = TRUE), ]
+
+Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022  %>%
+  mutate(Cost_per_prescription = cost / vol) # Creates a new column with cost per prescription
+
 
 View(Ep_Prev_Drugs_2022)
 
