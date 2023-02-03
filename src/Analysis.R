@@ -109,7 +109,7 @@ Ep_Prev_Drugs_2022 = Ep_Prev_Drugs_2022[order(Ep_Prev_Drugs_2022$Total_items_by_
 
 
 
-# NHS Lincolnshire has the highest prescription per population for 2022
+# NHS Blackpool has the highest prescription per population for 2022
 
 
 ########################################################################
@@ -126,7 +126,7 @@ Ep_Prev_Drugs_2022 = Ep_Prev_Drugs_2022[order(Ep_Prev_Drugs_2022$Total_cost_by_p
 
 View(Ep_Prev_Drugs_2022)
 
-# NHS Lincolnshire also has the highest cost per population for 2022
+
 
 
 
