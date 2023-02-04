@@ -1,5 +1,5 @@
 source(file = "src/DataCleaning.R")
-packages <- c("dplyr", "stringr", "tidyr", "ggplot2", "grid", "gridExtra", "ggpubr", "lubridate","hrbrthemes",
+packages <- c("dplyr", "stringr", "tidyr", "ggplot2", "grid", "gridExtra", "ggpubr", "lubridate", "hrbrthemes",
               "maps", "mapdata", "maptools", "rgdal", "leaflet", "ggmap", "rgeos", "broom", "plyr", "cartography",
               "plotly")
 install.packages(setdiff(packages, rownames(installed.packages())))
@@ -57,45 +57,35 @@ display_map(ep_drugs_total_presc_shape, "Epilepsy drugs (total number of prescri
 # Time series plots -------------------------------------------------------
 
 ## Total prescriptions
-
-ggplot(Ep_Drugs_Total, aes(x=Date, y=Total_Presc)) +
-  geom_line( color="#69b3a2") + 
+ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Presc)) +
+  geom_line(color = "#69b3a2") +
   xlab("") +
   ylab("Total Prescriptions in England") +
   theme_ipsum() +
-  theme(axis.text.x=element_text(angle=60, hjust=1)) 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
 
 ## Prevalence over time 
-
-ggplot(Ep_Prev_Total_Eng, aes(x=Year, y=Value)) +
-  geom_line(group = 1, color="#69b3a2")+
-  geom_point(color="#69b3a2")+
+ggplot(Ep_Prev_Total_Eng, aes(x = Year, y = Value)) +
+  geom_line(group = 1, color = "#69b3a2") +
+  geom_point(color = "#69b3a2") +
   xlab("") +
-  ylab('Epilepsy prevalence in England')+
-  ylim(c(0.6,0.85))+
-  geom_ribbon( aes(x = 1:length(Year), ymin = Lower.CI.95.0.limit, ymax = Upper.CI.95.0.limit), 
-              alpha=0.1, 
-              linetype="dashed",
-              color="grey")
+  ylab('Epilepsy prevalence in England') +
+  ylim(c(0.6, 0.85)) +
+  geom_ribbon(aes(x = seq_along(Year), ymin = Lower.CI.95.0.limit, ymax = Upper.CI.95.0.limit),
+              alpha = 0.1,
+              linetype = "dashed",
+              color = "grey")
 
 ## Prescriptions per 1000 people, prescription per case 
-
-ggplot(Ep_Drugs_Total, aes(x = Date))+
-  geom_line(aes(y=Presc_Per_Cases, color="Prescriptions per case")) +
-  geom_line(aes(y=Presc_Per_Population, color="Prescriptions per 1000 population")) + 
-  xlab("")+
-  ylab("")+
-  labs(color="Legend text")
-
+ggplot(Ep_Drugs_Total, aes(x = Date)) +
+  geom_line(aes(y = Presc_Per_Cases, color = "Prescriptions per case")) +
+  geom_line(aes(y = Presc_Per_Population, color = "Prescriptions per 1000 population")) +
+  xlab("") +
+  ylab("") +
+  labs(color = "Legend text")
 
 # stacked area chart - drugs per region over time
-ggplot(Ep_Drugs_Region_Year, aes(x=Year, y=Total_Presc, fill=Region)) + 
-  geom_area()
-
-ggplot(Ep_Drugs_Region_Year, aes(x=Year, y=Total_Cost, fill=Region)) + 
-  geom_area()
-
-
-ggplot(Ep_Prev_Region, aes(x=Year, y=Prev, fill=Region)) + 
-  geom_area()
+ggplot(Ep_Drugs_Region_Year, aes(x = Year, y = Total_Presc, fill = Region)) + geom_area()
+ggplot(Ep_Drugs_Region_Year, aes(x = Year, y = Total_Cost, fill = Region)) + geom_area()
+ggplot(Ep_Prev_Region, aes(x = Year, y = Prev, fill = Region)) + geom_area()
 
