@@ -16,6 +16,8 @@ CCG_ICB_Codes <- read.xlsx('data/CCG_IBS_Region.xlsx')
 PCN_CCG_Codes <- read.xlsx('data/B1357-PCN-Adjusted-Populations-V1.3-updated-31-March.xlsx', sheet = 'PCNs')
 PCN_CCG_Codes2 <- read.xlsx('data/CCG_TO_PCN.xlsx')
 CCG_IMDs <- read.csv('data/CCG_IMDs.csv')
+CCG_Lookup <- read.csv('data/CCG_lookup.csv') # CCG lookup to as different datasets have different formatting for CCGs and CCG names change occasionally
+
 
 # Data Cleaning PCN/CCGs/ICBs ---------------------------------------------
 

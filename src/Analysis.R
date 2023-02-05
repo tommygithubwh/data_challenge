@@ -68,9 +68,6 @@ sctest(Ep_Drugs_Total$Total_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 
 
 ## Have made some assumptions on matching CCGs, used closest on occasions.  Have kept the old column (CCG_Name_Prev) so people can compare
 
-CCG_Lookup <- read.csv('data/CCG_lookup.csv') # Use a look up table to match CCG names from the Ep_Prev_CCG and Ep_Drugs_CCG tables
-# We are using a csv but only as a CCG lookup table and no longer need to use Ep_Prev_CCG_Match
-
 Ep_Prev_CCG <- full_join(Ep_Prev_CCG, CCG_Lookup, by = "CCG_Name") # Adds the new CCG names to the Ep_Prev_CCG table
 
 Ep_Prev_CCG <- subset(Ep_Prev_CCG, select = -c(CCG_Name)) # Drops the old CCG names
@@ -113,7 +110,7 @@ Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>%
 
 View(Ep_Prev_Drugs_2022)
 
-
+View(Ep_Drugs_Total)
 
 
 
