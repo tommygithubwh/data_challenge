@@ -110,7 +110,7 @@ Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>%
 
 View(Ep_Prev_Drugs_2022)
 
-View(Ep_Drugs_Total)
+
 
 
 
