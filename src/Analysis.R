@@ -41,6 +41,7 @@ plot(Predictions_Vol_Sarima) # plots the forecast
 ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Presc)) +  geom_line()
 
 sctest(Ep_Drugs_Total$Total_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 30)
+
 # The Chow test attempts to determine if there is a structural break in the data at some point.
 # In this case, it is the volume of drugs before and after covid in the UK (point 30 or April 2020)
 # F = 2.9248, p-value = 0.06192.  We have insufficient evidence to reject the null of no structural break before and after covid
@@ -63,16 +64,20 @@ sctest(Ep_Drugs_Total$Total_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 
 # Descriptive statistics: 2022 prescriptions volume by CCG by population #
 ##########################################################################
 
-
 # To join Ep_Prev_CCG and Ep_Drugs_CCG to get CCGs by volume and cost by pop and prevalence
 
-## Reading in the data from temp Excel file which has the matching CCGs for Ep_Prev_CCG and Ep_Drugs_CCG  
-## When have time can do the match in R
-### Have made some assumptions on matching CCGs, used closest on occasions.  Have kept the old column (CCG_Name_Prev) so people can compare
+## Have made some assumptions on matching CCGs, used closest on occasions.  Have kept the old column (CCG_Name_Prev) so people can compare
 
-Ep_Prev_CCG_match <- read.csv('data/Ep_Prev_CCG_match.csv')
+CCG_Lookup <- read.csv('data/CCG_lookup.csv') # Use a look up table to match CCG names from the Ep_Prev_CCG and Ep_Drugs_CCG tables
+# We are using a csv but only as a CCG lookup table and no longer need to use Ep_Prev_CCG_Match
 
-Ep_Prev_Drugs <- inner_join(Ep_Prev_CCG_match, Ep_Drugs_CCG, by = "CCG_Name")
+Ep_Prev_CCG <- full_join(Ep_Prev_CCG, CCG_Lookup, by = "CCG_Name") # Adds the new CCG names to the Ep_Prev_CCG table
+
+Ep_Prev_CCG <- subset(Ep_Prev_CCG, select = -c(CCG_Name)) # Drops the old CCG names
+
+Ep_Prev_CCG <- Ep_Prev_CCG %>% rename(CCG_Name = CCG_Name_New) # Renames the column 
+
+Ep_Prev_Drugs <- inner_join(Ep_Prev_CCG, Ep_Drugs_CCG, by = "CCG_Name")
 
 Ep_Prev_Drugs_2022 <- subset(Ep_Prev_Drugs, Time.period == 2020) # Selects only prev from 2020 (latest)
 
@@ -107,8 +112,6 @@ Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>%
   mutate(Cost_per_prescription = cost / vol) # Creates a new column with cost per prescription
 
 View(Ep_Prev_Drugs_2022)
-
-
 
 
 
