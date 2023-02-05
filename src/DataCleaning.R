@@ -149,6 +149,9 @@ Ep_Drugs_Total <- Ep_Drugs_Total %>%
   dplyr::mutate(Date = as.Date(Group.1)) %>%
   dplyr::mutate(Year = year(Date))
 
+Ep_Drugs_Total_Vol <- Ep_Drugs_Total %>% dplyr::rename(Total_Presc = x)
+Ep_Drugs_Total_Vol <- Ep_Drugs_Total_Vol[, "Total_Presc"]
+
 # Epilepsy Prevalence -----------------------------------------------------
 Ep_Prev_Total_Eng <- Ep_Prev_CCG %>%
   filter(Area.Type == 'England' & Category == '') %>%

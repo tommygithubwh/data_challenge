@@ -7,16 +7,12 @@ rm(packages)
 #############################################################
 # Draft script for ARIMA forecast on anti-epileptic volume # 
 #############################################################
+source(file = "src/DataCleaning.R")
 
-# Reading in data from temp csv which has total drugs prescribing up to 2022 (current Ep_drugs_Total is only up to 2021)
-Ep_Drugs_Total_Temp <- read.csv('data/Ep_Drugs_Vol_Cost_up_to_Oct_2022_temp.csv')
-
-## ARIMA for drugs volume
-Ep_Drugs_Total_Vol <- Ep_Drugs_Total_Temp[, "Total_Presc"] # selects the column (volume) to be forecast
 Arima_Vol <- auto.arima(Ep_Drugs_Total_Vol) # Returns best ARIMA model
-summary(Arima_Vol)
-
 Predictions_Vol <- forecast(Arima_Vol, h = 12) # Predicts the next 12 time points
+
+summary(Arima_Vol)
 
 plot(Predictions_Vol, main = "ARIMA forecast of anti-epileptic prescriptions", xlab = "Time (months)",
      ylab = "Total anti-epileptic prescriptions") # basic graph with CIs
