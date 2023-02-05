@@ -111,6 +111,35 @@ Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>%
 View(Ep_Prev_Drugs_2022)
 
 
+#########################################################
+# Descriptive statistics: 2022 cost and spend data only #
+#########################################################
+
+Ep_Prev_Drugs_2022_unique <- subset(Ep_Prev_Drugs_2022, select = -c(Date, date, PCN_Code, CCG_Code, PCN_Name
+                                                               , Total_Items_Presc, Total_Cost, LSOA)) 
+
+Ep_Prev_Drugs_2022_unique <- unique(Ep_Prev_Drugs_2022) # creates new df with one row per CCG for 2022
+
+
+
+# Scatter chart showing relationship between IMD and prescriptions per population
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD, y = Total_items_by_pop)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "IMD by prescription per population",
+       x = "Index of Multiple Deprivation (1=lowest)",
+       y = "Prescriptions per population in 2022")
+
+
+# Scatter chart showing relationship between IMD and prevalence
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD, y = Prev) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "IMD by prescription per population",
+       x = "Index of Multiple Deprivation (1=lowest)",
+       y = "Prescriptions per population in 2022")
+
+
 
 
 
