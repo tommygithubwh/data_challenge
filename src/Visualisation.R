@@ -56,13 +56,23 @@ display_map(ep_drugs_total_presc_shape, "Epilepsy drugs (total number of prescri
 
 # Time series plots -------------------------------------------------------
 
+## Costs over time
+ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Cost/1000000)) +
+  geom_line(color = "#023020") +
+  xlab("") +
+  ylab("Total Cost in England (£1 million)") +
+  theme_ipsum() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+
 ## Total prescriptions
-ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Presc)) +
+ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Items_Presc)) +
   geom_line(color = "#69b3a2") +
   xlab("") +
   ylab("Total Prescriptions in England") +
   theme_ipsum() +
   theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
 
 ## Prevalence over time 
 ggplot(Ep_Prev_Total_Eng, aes(x = Year, y = Value)) +
@@ -76,16 +86,30 @@ ggplot(Ep_Prev_Total_Eng, aes(x = Year, y = Value)) +
               linetype = "dashed",
               color = "grey")
 
+
 ## Prescriptions per 1000 people, prescription per case 
 ggplot(Ep_Drugs_Total, aes(x = Date)) +
   geom_line(aes(y = Presc_Per_Cases, color = "Prescriptions per case")) +
   geom_line(aes(y = Presc_Per_Population, color = "Prescriptions per 1000 population")) +
   xlab("") +
   ylab("") +
-  labs(color = "Legend text")
+  labs(color = "")+ 
+  ggtitle('Volume of epilepsy prescriptions over time')
+
+ggsave('Plots/prevalence_stacked_time.png')
+
 
 # stacked area chart - drugs per region over time
-ggplot(Ep_Drugs_Region_Year, aes(x = Year, y = Total_Presc, fill = Region)) + geom_area()
-ggplot(Ep_Drugs_Region_Year, aes(x = Year, y = Total_Cost, fill = Region)) + geom_area()
-ggplot(Ep_Prev_Region, aes(x = Year, y = Prev, fill = Region)) + geom_area()
+ggplot(Ep_Drugs_Region_Year, aes(x = Year, y = Total_Presc/1000000, fill = Region)) + 
+  ylab('Prescriptions (millions)')+ 
+  geom_area()
+  
+ggplot(Ep_Drugs_Region_Year, aes(x = Year, y = Total_Cost/1000000, fill = Region)) +
+   ylab('Prescriptions (£1 millions)') +
+   geom_area()
+
+ggplot(Ep_Prev_Region, aes(x = Year, y = Prev, fill = Region)) +
+  ylab('Epilepsy prevalence') + 
+  ylim(c(0,0.1))+
+  geom_area()
 

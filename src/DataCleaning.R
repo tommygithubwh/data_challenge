@@ -145,14 +145,11 @@ Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
 
 
 ## Total prescriptions 
-Ep_Drugs_Total <- aggregate(Ep_Drugs_CCG$Total_Items_Presc, by = list(Ep_Drugs_CCG$date), FUN = sum)
+Ep_Drugs_Total <- aggregate(Ep_Drugs_CCG[,3:4], by = list(Ep_Drugs_CCG$date), FUN = sum)
 
 Ep_Drugs_Total <- Ep_Drugs_Total %>%
   dplyr::mutate(Date = as.Date(Group.1)) %>%
   dplyr::mutate(Year = year(Date))
-
-Ep_Drugs_Total_Vol <- Ep_Drugs_Total %>% dplyr::rename(Total_Presc = x)
-Ep_Drugs_Total_Vol <- Ep_Drugs_Total_Vol[, "Total_Presc"]
 
 # Epilepsy Prevalence -----------------------------------------------------
 Ep_Prev_Total_Eng <- Ep_Prev_CCG %>%
@@ -163,12 +160,11 @@ Ep_Prev_Total_Eng <- Ep_Prev_CCG %>%
 Ep_Drugs_Total <- Ep_Drugs_Total %>%
   inner_join(Ep_Prev_Total_Eng %>%
                select(13:19, Year) %>%
-               dplyr::mutate(Year = as.numeric(Year))) %>%
-  dplyr::rename(Total_Presc = x)
+               dplyr::mutate(Year = as.numeric(Year))) 
 
 Ep_Drugs_Total <- Ep_Drugs_Total %>%
-  dplyr::mutate(Presc_Per_Cases = Total_Presc / Count,
-                Presc_Per_Population = (Total_Presc / Denominator) * 1000)
+  dplyr::mutate(Presc_Per_Cases = Total_Items_Presc / Count,
+                Presc_Per_Population = (Total_Items_Presc / Denominator) * 1000)
 
 # Population per CCG  -----------------------------------------------------
 
@@ -276,3 +272,12 @@ Ep_Drugs_Region_Year <- aggregate(Ep_Drugs_ICB_Year[, 3:4], by = list(Ep_Drugs_I
                                   FUN = sum)
 
 colnames(Ep_Drugs_Region_Year)[1:2] <- c('Year', 'Region') 
+
+
+# Drugs -------------------------------------------------------------------
+
+## difference before and after covid
+
+
+
+
