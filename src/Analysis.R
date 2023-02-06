@@ -134,10 +134,20 @@ ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD, y = Total_items_by_pop)) +
 
 
 # Scatter chart showing relationship between IMD and prevalence
-ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD, y = Prev)) +
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Prev, y = Total_items_by_pop)) +
   geom_point() +
   geom_smooth(method = "lm") +
   labs(title = "IMD by epilepsy prevalence",
+       x = "Index of Multiple Deprivation (1=most deprived)",
+       y = "Prevalence per 1,000 people")
+
+
+# Scatter chart showing relationship between IMD and prevalence
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Health.Deprivation.and.Disability.Decile..where.1.is.most.deprived.10..of.LSOAs.
+, y = Total_items_by_pop)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Health and disability decile by epilepsy prevalence",
        x = "Index of Multiple Deprivation (1=most deprived)",
        y = "Prevalence per 1,000 people")
 
