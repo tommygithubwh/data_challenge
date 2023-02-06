@@ -299,10 +299,10 @@ After_Covid_Data1 <- Ep_Drugs_CCG %>%
   group_by(CCG_Name) %>% 
   mutate(Years = n_distinct(Year))
 
-table(After_Covid_Data$Years)
-  
 After_Covid_Data <- aggregate(After_Covid_Data1[,3:4], by = list(After_Covid_Data1$CCG_Name), 
                                FUN = sum)
+
+table(After_Covid_Data$Years)
 
 After_Covid_Data <- After_Covid_Data %>%
   dplyr::rename(CCG_Name = Group.1) %>% 

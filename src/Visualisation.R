@@ -1,7 +1,7 @@
 source(file = "src/DataCleaning.R")
 packages <- c("dplyr", "stringr", "tidyr", "ggplot2", "grid", "gridExtra", "ggpubr", "lubridate", "hrbrthemes",
               "maps", "mapdata", "maptools", "rgdal", "leaflet", "ggmap", "rgeos", "broom", "plyr", "cartography",
-              "plotly", "scales", "devtools")
+              "plotly", "scales")
 install.packages(setdiff(packages, rownames(installed.packages())))
 lapply(packages, library, character.only = TRUE, quietly = TRUE)
 rm(packages)
@@ -57,7 +57,7 @@ display_map(ep_drugs_total_presc_shape, "Epilepsy drugs (total number of prescri
 # Time series plots -------------------------------------------------------
 
 ## Costs over time
-ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Cost/1000000)) +
+ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Cost / 1000000)) +
   geom_line(color = "#023020") +
   xlab("") +
   ylab("Total Cost in England (£1 million)") +
@@ -93,78 +93,77 @@ ggplot(Ep_Drugs_Total, aes(x = Date)) +
   geom_line(aes(y = Presc_Per_Population, color = "Prescriptions per 1000 population")) +
   xlab("") +
   ylab("") +
-  labs(color = "")+ 
+  labs(color = "") +
   ggtitle('Volume of epilepsy prescriptions over time')
 
 ggsave('Plots/prevalence_stacked_time.png')
 
 
 # stacked area chart - drugs per region over time
-ggplot(Ep_Drugs_Region_Year, aes(x = Year, y = Total_Presc/1000000, fill = Region)) + 
-  ylab('Prescriptions (millions)')+ 
+ggplot(Ep_Drugs_Region_Year, aes(x = Year, y = Total_Presc / 1000000, fill = Region)) +
+  ylab('Prescriptions (millions)') +
   geom_area()
-  
-ggplot(Ep_Drugs_Region_Year, aes(x = Year, y = Total_Cost/1000000, fill = Region)) +
-   ylab('Prescriptions (£1 millions)') +
-   geom_area()
+
+ggplot(Ep_Drugs_Region_Year, aes(x = Year, y = Total_Cost / 1000000, fill = Region)) +
+  ylab('Prescriptions (£1 millions)') +
+  geom_area()
 
 ggplot(Ep_Prev_Region, aes(x = Year, y = Prev, fill = Region)) +
-  ylab('Epilepsy prevalence') + 
-  ylim(c(0,0.1))+
+  ylab('Epilepsy prevalence') +
+  ylim(c(0, 0.1)) +
   geom_area()
 
 ## Plots before and after covid
-
 get_wraper <- function(width) {
   function(x) {
-    lapply(strwrap(x, width = width, simplify = FALSE), paste, collapse="\n")
+    lapply(strwrap(x, width = width, simplify = FALSE), paste, collapse = "\n")
   }
 }
 
 #scale_x_discrete(labels = get_wraper(10))+
 
-ggplot(Covid_Data_presc %>% 
-         head(10), 
+ggplot(Covid_Data_presc %>%
+         head(10),
        aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
-  geom_col()+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+
-  labs( x = 'NHS CCG', y = 'Change in prescriptions per year')+
-  scale_fill_discrete(name = "NHS CCG")+
+  geom_col() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x = 'NHS CCG', y = 'Change in prescriptions per year') +
+  scale_fill_discrete(name = "NHS CCG") +
   ggtitle('Top Ten NHS CCGs: Increase in prescriptions before and after COVID-19 lockdown')
 
-ggplot(Covid_Data_presc %>% 
-         tail(10), 
+ggplot(Covid_Data_presc %>%
+         tail(10),
        aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
-  geom_col()+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+
-  labs( x = 'NHS CCG', y = 'Change in prescriptions per year')+
-  scale_fill_discrete(name = "NHS CCG")+
+  geom_col() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x = 'NHS CCG', y = 'Change in prescriptions per year') +
+  scale_fill_discrete(name = "NHS CCG") +
   ggtitle('Bottom Ten NHS CCGs: Increase in prescriptions before and after COVID-19 lockdown')
-  
+
 ggsave('Plots/costsc_decrease_covid.png')
 
-ggplot(Covid_Data_presc %>% 
-         head(10), 
+ggplot(Covid_Data_presc %>%
+         head(10),
        aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
-  geom_col()+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+
-  labs( x = 'NHS CCG', y = 'Change in cost per year (£)')+
-  scale_fill_discrete(name = "NHS CCG")+
+  geom_col() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x = 'NHS CCG', y = 'Change in cost per year (£)') +
+  scale_fill_discrete(name = "NHS CCG") +
   ggtitle('Top Ten NHS CCGs: Increase in cost before and after COVID-19 lockdown')
 
-ggplot(Covid_Data_presc %>% 
-         tail(10), 
+ggplot(Covid_Data_presc %>%
+         tail(10),
        aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
-  geom_col()+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+
-  labs( x = 'NHS CCG', y = 'Change in cost per year (£)')+
-  scale_fill_discrete(name = "NHS CCG")+
+  geom_col() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x = 'NHS CCG', y = 'Change in cost per year (£)') +
+  scale_fill_discrete(name = "NHS CCG") +
   ggtitle('Bottom Ten NHS CCGs: Increase in cost before and after COVID-19 lockdown')
