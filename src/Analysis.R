@@ -9,10 +9,13 @@ rm(packages)
 #############################################################
 source(file = "src/DataCleaning.R")
 
+Ep_Drugs_Total_Vol <- Ep_Drugs_Total$Total_Items_Presc
+
 Arima_Vol <- auto.arima(Ep_Drugs_Total_Vol) # Returns best ARIMA model
 Predictions_Vol <- forecast(Arima_Vol, h = 12) # Predicts the next 12 time points
 
 summary(Arima_Vol)
+
 
 plot(Predictions_Vol, main = "ARIMA forecast of anti-epileptic prescriptions", xlab = "Time (months)",
      ylab = "Total anti-epileptic prescriptions") # basic graph with CIs
@@ -30,17 +33,18 @@ Predictions_Vol_Sarima <- forecast(Sarima_Vol, h = 12) # Predicts next 24 time p
 plot(Sarima_Vol) # plots the Sarima model
 plot(Predictions_Vol_Sarima) # plots the forecast
 
-# We need to tune the SARIMA model for best fit.  An ARIMA forecast will suffice for now  
-## as need to look up how to implement in R so will come back to this if have time
+# We have created a draft SARIMA forecast but this needs to be tuned for best fit
+## A SARIMA model includes seasonal effects in forecasts and a SARIMA forecast can be explored in any further expansion of this analysis
+
 
 #######################################################
 # Draft script for Chow Test on anti-epileptic volume # 
 #######################################################
 
 # Chow test for covid period
-ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Presc)) +  geom_line()
+ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Items_Presc)) +  geom_line()
 
-sctest(Ep_Drugs_Total$Total_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 30)
+sctest(Ep_Drugs_Total$Total_Items_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 30)
 
 # The Chow test attempts to determine if there is a structural break in the data at some point.
 # In this case, it is the volume of drugs before and after covid in the UK (point 30 or April 2020)
@@ -49,9 +53,7 @@ sctest(Ep_Drugs_Total$Total_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 
 
 # Chow test for NICE epilepsy guidelines April 2022
 
-# sctest(Ep_Drugs_Total$Total_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 54)
-
-# Doesn't currently work as new Ep_Drugs_Total only goes up to Oct 2021 (previous went up to Dec 2022)
+sctest(Ep_Drugs_Total$Total_Items_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 54)
 
 # F = 0.23881, p-value = 0.7884.   We have insufficient evidence to reject the null of no structural break before and after NICE
 # Guidelines but sample for the period after the guidelines is small
