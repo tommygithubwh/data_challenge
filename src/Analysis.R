@@ -123,7 +123,6 @@ Ep_Prev_Drugs_2022_unique <- subset(Ep_Prev_Drugs_2022, select = -c(Date, date, 
 Ep_Prev_Drugs_2022_unique <- unique(Ep_Prev_Drugs_2022_unique) # creates new df with one row per CCG for 2022
 
 
-
 # Scatter chart showing relationship between IMD and prescriptions per population
 ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD, y = Total_items_by_pop)) +
   geom_point() +
@@ -133,23 +132,34 @@ ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD, y = Total_items_by_pop)) +
        y = "Prescriptions per population in 2022")
 
 
-# Scatter chart showing relationship between IMD and prevalence
+# Scatter chart showing relationship between prevalence and prescriptions per population
 ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Prev, y = Total_items_by_pop)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "IMD by epilepsy prevalence",
+       x = "Prevalence per 1,000 people",
+       y = "Prescriptions per population in 2022")
+
+
+# Scatter chart showing relationship between health decile and prescriptions per population
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Health.Deprivation.and.Disability.Decile..where.1.is.most.deprived.10..of.LSOAs.
+, y = Total_items_by_pop)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Health and disability decile by epilepsy prevalence",
+       x = "Health decile (1=most deprived)",
+       y = "Prevalence per 1,000 people")
+
+
+# Scatter chart showing relationship between IMD and prevalence
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD
+                                             , y = Prev)) +
   geom_point() +
   geom_smooth(method = "lm") +
   labs(title = "IMD by epilepsy prevalence",
        x = "Index of Multiple Deprivation (1=most deprived)",
        y = "Prevalence per 1,000 people")
 
-
-# Scatter chart showing relationship between IMD and prevalence
-ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Health.Deprivation.and.Disability.Decile..where.1.is.most.deprived.10..of.LSOAs.
-, y = Total_items_by_pop)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  labs(title = "Health and disability decile by epilepsy prevalence",
-       x = "Index of Multiple Deprivation (1=most deprived)",
-       y = "Prevalence per 1,000 people")
 
 View(Ep_Prev_Drugs_2022_unique)
 
