@@ -158,7 +158,7 @@ Ep_Prev_Total_Eng <- Ep_Prev_CCG %>%
   distinct(Year, .keep_all = TRUE)
 
 Ep_Drugs_Total <- Ep_Drugs_Total %>%
-  inner_join(Ep_Prev_Total_Eng %>%
+  left_join(Ep_Prev_Total_Eng %>%
                select(13:19, Year) %>%
                dplyr::mutate(Year = as.numeric(Year))) 
 
