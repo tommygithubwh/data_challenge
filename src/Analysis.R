@@ -136,7 +136,7 @@ ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD, y = Total_items_by_pop)) +
 ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Prev, y = Total_items_by_pop)) +
   geom_point() +
   geom_smooth(method = "lm") +
-  labs(title = "IMD by epilepsy prevalence",
+  labs(title = "Prescription per population epilepsy prevalence",
        x = "Prevalence per 1,000 people",
        y = "Prescriptions per population in 2022")
 
