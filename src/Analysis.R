@@ -148,7 +148,7 @@ ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Health.Deprivation.and.Disabili
   geom_smooth(method = "lm") +
   labs(title = "Health and disability decile by epilepsy prevalence",
        x = "Health decile (1=most deprived)",
-       y = "Prevalence per 1,000 people")
+       y = "Prescriptions per population in 2022")
 
 
 # Scatter chart showing relationship between IMD and prevalence
