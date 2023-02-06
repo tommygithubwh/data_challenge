@@ -1,7 +1,7 @@
 source(file = "src/DataCleaning.R")
 packages <- c("dplyr", "stringr", "tidyr", "ggplot2", "grid", "gridExtra", "ggpubr", "lubridate", "hrbrthemes",
               "maps", "mapdata", "maptools", "rgdal", "leaflet", "ggmap", "rgeos", "broom", "plyr", "cartography",
-              "plotly")
+              "plotly", "scales", "devtools")
 install.packages(setdiff(packages, rownames(installed.packages())))
 lapply(packages, library, character.only = TRUE, quietly = TRUE)
 rm(packages)
@@ -113,3 +113,58 @@ ggplot(Ep_Prev_Region, aes(x = Year, y = Prev, fill = Region)) +
   ylim(c(0,0.1))+
   geom_area()
 
+## Plots before and after covid
+
+get_wraper <- function(width) {
+  function(x) {
+    lapply(strwrap(x, width = width, simplify = FALSE), paste, collapse="\n")
+  }
+}
+
+#scale_x_discrete(labels = get_wraper(10))+
+
+ggplot(Covid_Data_presc %>% 
+         head(10), 
+       aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
+  geom_col()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  labs( x = 'NHS CCG', y = 'Change in prescriptions per year')+
+  scale_fill_discrete(name = "NHS CCG")+
+  ggtitle('Top Ten NHS CCGs: Increase in prescriptions before and after COVID-19 lockdown')
+
+ggplot(Covid_Data_presc %>% 
+         tail(10), 
+       aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
+  geom_col()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  labs( x = 'NHS CCG', y = 'Change in prescriptions per year')+
+  scale_fill_discrete(name = "NHS CCG")+
+  ggtitle('Bottom Ten NHS CCGs: Increase in prescriptions before and after COVID-19 lockdown')
+  
+ggsave('Plots/costsc_decrease_covid.png')
+
+ggplot(Covid_Data_presc %>% 
+         head(10), 
+       aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
+  geom_col()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  labs( x = 'NHS CCG', y = 'Change in cost per year (£)')+
+  scale_fill_discrete(name = "NHS CCG")+
+  ggtitle('Top Ten NHS CCGs: Increase in cost before and after COVID-19 lockdown')
+
+ggplot(Covid_Data_presc %>% 
+         tail(10), 
+       aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
+  geom_col()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  labs( x = 'NHS CCG', y = 'Change in cost per year (£)')+
+  scale_fill_discrete(name = "NHS CCG")+
+  ggtitle('Bottom Ten NHS CCGs: Increase in cost before and after COVID-19 lockdown')

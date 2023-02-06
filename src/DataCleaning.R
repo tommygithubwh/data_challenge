@@ -277,7 +277,55 @@ colnames(Ep_Drugs_Region_Year)[1:2] <- c('Year', 'Region')
 # Drugs -------------------------------------------------------------------
 
 ## difference before and after covid
+## CCGs that spent the most before covid
 
+Before_Covid_Data <- Ep_Drugs_CCG %>% 
+  filter(Date < '2020-03-29') %>% 
+  group_by(CCG_Name) %>% 
+  mutate(Years = n_distinct(Year))
 
+table(Before_Covid_Data$Years)
 
+Before_Covid_Data <- aggregate(Before_Covid_Data[,3:4], by = list(Before_Covid_Data$CCG_Name), 
+                               FUN = sum)
 
+Before_Covid_Data <- Before_Covid_Data %>% 
+  mutate(Presc_Per_Year_BC = Total_Items_Presc/4, 
+         Cost_Per_Year_BC = Total_Cost/4) %>% 
+  dplyr::rename(CCG_Name = Group.1,)
+
+After_Covid_Data1 <- Ep_Drugs_CCG %>% 
+  filter(Date > '2020-08-14')%>% 
+  group_by(CCG_Name) %>% 
+  mutate(Years = n_distinct(Year))
+
+table(After_Covid_Data$Years)
+  
+After_Covid_Data <- aggregate(After_Covid_Data1[,3:4], by = list(After_Covid_Data1$CCG_Name), 
+                               FUN = sum)
+
+After_Covid_Data <- After_Covid_Data %>%
+  dplyr::rename(CCG_Name = Group.1) %>% 
+  left_join(After_Covid_Data1 %>% 
+              distinct(CCG_Name, .keep_all = TRUE) %>% 
+              dplyr::select(CCG_Name, Years)) %>% 
+  mutate(Presc_Per_Year_AC = Total_Items_Presc/Years, 
+         Cost_Per_Year_AC = Total_Cost/Years)
+
+Covid_Data <- Before_Covid_Data %>% 
+  left_join(After_Covid_Data %>% 
+              select(CCG_Name, Presc_Per_Year_AC, Cost_Per_Year_AC)) %>% 
+  mutate(Change_Presc = Presc_Per_Year_AC - Presc_Per_Year_BC, 
+        Change_Cost = Cost_Per_Year_AC - Cost_Per_Year_BC)
+
+Covid_Data_presc <- Covid_Data %>% 
+  arrange(desc(Change_Presc))
+
+Covid_Data_Cost <- Covid_Data %>% 
+  arrange(desc(Change_Cost))
+
+Covid_Data_Cost$CCG_Name <- substr(Covid_Data_Cost$CCG_Name, 1, nchar(Covid_Data_Cost$CCG_Name) - 4)
+Covid_Data_Cost$CCG_Name <- substr(Covid_Data_Cost$CCG_Name, 4, nchar(Covid_Data_Cost$CCG_Name))
+
+Covid_Data_presc$CCG_Name <- substr(Covid_Data_presc$CCG_Name, 1, nchar(Covid_Data_presc$CCG_Name) - 4)
+Covid_Data_presc$CCG_Name <- substr(Covid_Data_presc$CCG_Name, 4, nchar(Covid_Data_presc$CCG_Name))
