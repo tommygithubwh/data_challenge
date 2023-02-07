@@ -1,8 +1,9 @@
 # Installing Packages -----------------------------------------------------
-packages <- c("forecast", "sarima", "strucchange", "bayesforecast")
+packages <- c("forecast", "sarima", "strucchange", "bayesforecast", "tseries")
 install.packages(setdiff(packages, rownames(installed.packages())))
 lapply(packages, library, character.only = TRUE, quietly = TRUE)
 rm(packages)
+
 
 #############################################################
 # Draft script for ARIMA forecast on anti-epileptic volume # 
@@ -10,6 +11,10 @@ rm(packages)
 source(file = "src/DataCleaning.R")
 
 Ep_Drugs_Total_Vol <- Ep_Drugs_Total$Total_Items_Presc
+
+adf.test(Ep_Drugs_Total_Vol) # Dickey Fuller test for stationarity
+# p-value = 0.03493, reject null of non-stationarity
+## okay to use ARIMA 
 
 Arima_Vol <- auto.arima(Ep_Drugs_Total_Vol) # Returns best ARIMA model
 Predictions_Vol <- forecast(Arima_Vol, h = 12) # Predicts the next 12 time points
@@ -28,7 +33,7 @@ Ep_Drugs_Total_Vol <- as.numeric(unlist(Ep_Drugs_Total_Vol))
 
 Sarima_Vol <- auto.sarima(Ep_Drugs_Total_Vol, seasonal = TRUE, iter = 2000, chains = 4)
 
-Predictions_Vol_Sarima <- forecast(Sarima_Vol, h = 12) # Predicts next 24 time points
+Predictions_Vol_Sarima <- forecast(Sarima_Vol, h = 12) # Predicts next 12 time points
 
 plot(Sarima_Vol) # plots the Sarima model
 plot(Predictions_Vol_Sarima) # plots the forecast
