@@ -23,7 +23,7 @@ summary(Arima_Vol)
 
 
 plot(Predictions_Vol, main = "ARIMA forecast of anti-epileptic prescriptions", xlab = "Time (months)",
-     ylab = "Total anti-epileptic prescriptions") # basic graph with CIs
+     ylab = "Total anti-epileptic prescriptions per month") # basic graph with CIs
 
 #############################################################
 # Draft script for SARIMA forecast on anti-epileptic volume # 
@@ -87,7 +87,7 @@ Ep_Drugs_CCG <- subset(Ep_Drugs_CCG, Year == 2022) # Selects only those with 202
 
 Ep_Prev_Drugs_2022 <- inner_join(Ep_Prev_CCG, Ep_Drugs_CCG, by = "CCG_Name")
 
-Ep_Prev_Drugs_2022 <- unique(Ep_Prev_Drugs_2022) # Removes duplicates.  Very important!
+Ep_Prev_Drugs_2022 <- unique(Ep_Prev_Drugs_2022) # Removes duplicates.  
 
 Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>%
   group_by(CCG_Name, Time.period, Year) %>%
@@ -169,6 +169,5 @@ ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD
        y = "Prevalence per 1,000 people")
 
 
-View(Ep_Prev_Drugs_2022_unique)
 
 
