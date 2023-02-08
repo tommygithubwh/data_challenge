@@ -49,6 +49,7 @@ plot(Predictions_Vol_Sarima) # plots the forecast
 # Chow test for covid period
 ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Items_Presc)) +  geom_line()
 
+
 sctest(Ep_Drugs_Total$Total_Items_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 30)
 
 # The Chow test attempts to determine if there is a structural break in the data at some point.
@@ -167,6 +168,21 @@ ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD
   labs(title = "IMD by epilepsy prevalence",
        x = "Index of Multiple Deprivation (1=most deprived)",
        y = "Prevalence per 1,000 people")
+
+
+
+# Scatter chart showing relationship between cost per prescription and epilepsy prevalence
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Cost_per_prescription
+                                             , y = Prev)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Cost per prescription by epilepsy prevalence",
+       x = "Cost per prescription",
+       y = "Prevalence per 1,000 people")
+
+
+
+
 
 
 
