@@ -81,16 +81,20 @@ Ep_Prev_CCG <- subset(Ep_Prev_CCG, select = -c(CCG_Name)) # Drops the old CCG na
 
 Ep_Prev_CCG <- Ep_Prev_CCG %>% rename(CCG_Name = CCG_Name_New) # Renames the column 
 
-Ep_Prev_Drugs <- inner_join(Ep_Prev_CCG, Ep_Drugs_CCG, by = "CCG_Name")
+Ep_Prev_CCG  <- subset(Ep_Prev_CCG , Time.period == 2020) # Selects only prev from 2020 (latest)
 
-Ep_Prev_Drugs_2022 <- subset(Ep_Prev_Drugs, Time.period == 2020) # Selects only prev from 2020 (latest)
+Ep_Drugs_CCG <- subset(Ep_Drugs_CCG, Year == 2022) # Selects only those with 2022 by volume or cost
 
-Ep_Prev_Drugs_2022 <- subset(Ep_Prev_Drugs_2022, Year == 2022) # Selects only those with 2022 by volume or cost
+Ep_Prev_Drugs_2022 <- inner_join(Ep_Prev_CCG, Ep_Drugs_CCG, by = "CCG_Name")
+
+Ep_Prev_Drugs_2022 <- unique(Ep_Prev_Drugs_2022)
 
 Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>%
-  group_by(CCG_Name) %>%
+  group_by(CCG_Name, Time.period, Year) %>%
   mutate(vol = sum(Total_Items_Presc)) # Creating a new column
 # with total items prescribed by CCG for 2022
+
+View(Ep_Prev_Drugs_2022)
 
 Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>%
   mutate(Total_items_by_pop = vol / CCG_Population) # Creates a new column with total 2022 prescriptions by CCG population
@@ -116,7 +120,6 @@ Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>%
   mutate(Cost_per_prescription = cost / vol) # Creates a new column with cost per prescription
 
 View(Ep_Prev_Drugs_2022)
-
 
 #########################################################
 # Descriptive statistics: 2022 cost and spend data only #
