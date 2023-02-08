@@ -87,7 +87,7 @@ Ep_Drugs_CCG <- subset(Ep_Drugs_CCG, Year == 2022) # Selects only those with 202
 
 Ep_Prev_Drugs_2022 <- inner_join(Ep_Prev_CCG, Ep_Drugs_CCG, by = "CCG_Name")
 
-Ep_Prev_Drugs_2022 <- unique(Ep_Prev_Drugs_2022)
+Ep_Prev_Drugs_2022 <- unique(Ep_Prev_Drugs_2022) # Removes duplicates.  Very important!
 
 Ep_Prev_Drugs_2022 <- Ep_Prev_Drugs_2022 %>%
   group_by(CCG_Name, Time.period, Year) %>%
@@ -170,7 +170,5 @@ ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD
 
 
 View(Ep_Prev_Drugs_2022_unique)
-
-writeEp_Prev_Drugs_2022_unique
 
 
