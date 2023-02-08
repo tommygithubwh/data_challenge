@@ -171,6 +171,6 @@ ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD
 
 View(Ep_Prev_Drugs_2022_unique)
 
-
+writeEp_Prev_Drugs_2022_unique
 
 
