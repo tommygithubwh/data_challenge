@@ -308,7 +308,7 @@ After_Covid_Data1 <- aggregate(After_Covid_Data1[,3:4], by = list(After_Covid_Da
 
 After_Covid_Data <- After_Covid_Data1 %>%
   dplyr::rename(CCG_Name = Group.1) %>% 
-  left_join(After_Covid_Data1 %>% 
+  left_join(After_Covid_Data %>% 
               dplyr::select(CCG_Name, Months)) %>% 
   mutate(Presc_Per_Year_AC = (Total_Items_Presc/Months)*12, 
          Cost_Per_Year_AC = (Total_Cost/Months)*12 ) %>%
