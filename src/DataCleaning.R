@@ -286,7 +286,6 @@ Before_Covid_Data <- Ep_Drugs_CCG %>%
   group_by(CCG_Name) %>% 
   mutate(Months = n_distinct(Date))
 
-table(Before_Covid_Data$Years)
 
 Before_Covid_Data1 <- aggregate(Before_Covid_Data[,3:4], by = list(Before_Covid_Data$CCG_Name), 
                                FUN = sum)
@@ -304,12 +303,10 @@ After_Covid_Data <- Ep_Drugs_CCG %>%
   group_by(CCG_Name) %>% 
   mutate(Months = n_distinct(Date))
 
-table(After_Covid_Data$Years)
-  
-After_Covid_Data <- aggregate(After_Covid_Data1[,3:4], by = list(After_Covid_Data1$CCG_Name), 
+After_Covid_Data1 <- aggregate(After_Covid_Data1[,3:4], by = list(After_Covid_Data1$CCG_Name), 
                                FUN = sum)
 
-After_Covid_Data <- After_Covid_Data %>%
+After_Covid_Data <- After_Covid_Data1 %>%
   dplyr::rename(CCG_Name = Group.1) %>% 
   left_join(After_Covid_Data1 %>% 
               dplyr::select(CCG_Name, Months)) %>% 
