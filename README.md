@@ -14,20 +14,20 @@ c) Have patterns in prescribing changed after: (1) the start of the COVID-19 pan
 
 Launch Visualisation.R 
 
-##Sections
+## Sections
 
-###1. Data 
+### 1. Data 
 Data files used for analysis (.csv, .xls* etc.)
 
-###2. Source (src)
+### 2. Source (src)
 Contains code that is used to produce analysis
 
-####2.1 DataCleaning.R
+#### 2.1 DataCleaning.R
 Contains variables that will be used in the analysis
-####2.2 Analysis.R
+#### 2.2 Analysis.R
 Contains Chow test, ARIMA/SARIMA analysis and descriptive stats for the data
-####2.3 Visualisation.R
+#### 2.3 Visualisation.R
 Contains all the plots and is a main entry ppint, links all R files
 
-###3. Plots
+### 3. Plots
 Files that contain plots obtained through the analysis
