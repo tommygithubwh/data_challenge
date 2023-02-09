@@ -113,57 +113,47 @@ ggplot(Ep_Prev_Region, aes(x = Year, y = Prev, fill = Region)) +
   ylim(c(0, 0.1)) +
   geom_area()
 
-## Plots before and after covid
-get_wraper <- function(width) {
-  function(x) {
-    lapply(strwrap(x, width = width, simplify = FALSE), paste, collapse = "\n")
-  }
-}
-
-#scale_x_discrete(labels = get_wraper(10))+
-
-ggplot(Covid_Data_presc %>%
-         head(10),
-       aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
-  geom_col() +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank()) +
-  labs(x = 'NHS CCG', y = 'Change in prescriptions per year') +
-  scale_fill_discrete(name = "NHS CCG") +
+#Plots for change in prescriptions and costs before and after covid
+ggplot(Covid_Data_presc %>% 
+         head(10), 
+       aes(x = fct_rev(fct_reorder(CCG_Name, Percent_Vol)), y = Percent_Vol, fill = CCG_Name)) +
+  geom_col()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  labs( x = 'NHS CCG', y = 'Percentage change in prescriptions per year')+
+  scale_fill_discrete(name = "NHS CCG")+
   ggtitle('Top Ten NHS CCGs: Increase in prescriptions before and after COVID-19 lockdown')
 
-ggplot(Covid_Data_presc %>%
-         tail(10),
-       aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
-  geom_col() +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank()) +
-  labs(x = 'NHS CCG', y = 'Change in prescriptions per year') +
-  scale_fill_discrete(name = "NHS CCG") +
+ggplot(Covid_Data_presc %>% 
+         tail(10), 
+       aes(x = fct_rev(fct_reorder(CCG_Name, Percent_Vol)), y = Percent_Vol, fill = CCG_Name)) +
+  geom_col()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  labs( x = 'NHS CCG', y = 'Percentage change in prescriptions per year')+
+  scale_fill_discrete(name = "NHS CCG")+
   ggtitle('Bottom Ten NHS CCGs: Increase in prescriptions before and after COVID-19 lockdown')
 
-ggsave('Plots/costsc_decrease_covid.png')
+ggplot(Covid_Data_Cost %>% 
+         head(10), 
+       aes(x = fct_rev(fct_reorder(CCG_Name, Percent_Cost)), y = Percent_Cost, fill = CCG_Name)) +
+  geom_col()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  labs( x = 'NHS CCG', y = 'Percentage change in cost per year')+
+  scale_fill_discrete(name = "NHS CCG")+
+  ggtitle('Top Ten NHS CCGs: change in cost before and after COVID-19 lockdown')
 
-ggplot(Covid_Data_presc %>%
-         head(10),
-       aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
-  geom_col() +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank()) +
-  labs(x = 'NHS CCG', y = 'Change in cost per year (£)') +
-  scale_fill_discrete(name = "NHS CCG") +
-  ggtitle('Top Ten NHS CCGs: Increase in cost before and after COVID-19 lockdown')
-
-ggplot(Covid_Data_presc %>%
-         tail(10),
-       aes(x = fct_rev(fct_reorder(CCG_Name, Change_Presc)), y = Change_Presc, fill = CCG_Name)) +
-  geom_col() +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank()) +
-  labs(x = 'NHS CCG', y = 'Change in cost per year (£)') +
-  scale_fill_discrete(name = "NHS CCG") +
-  ggtitle('Bottom Ten NHS CCGs: Increase in cost before and after COVID-19 lockdown')
+ggplot(Covid_Data_Cost %>% 
+         tail(10), 
+       aes(x = fct_rev(fct_reorder(CCG_Name, Percent_Cost)), y = Percent_Cost, fill = CCG_Name)) +
+  geom_col()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  labs( x = 'NHS CCG', y = 'Percentage change in cost per year')+
+  scale_fill_discrete(name = "NHS CCG")+
+  ggtitle('Bottom Ten NHS CCGs: change in cost before and after COVID-19 lockdown')
