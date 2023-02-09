@@ -46,16 +46,20 @@ plot(Predictions_Vol_Sarima) # plots the forecast
 # Draft script for Chow Test on anti-epileptic volume # 
 #######################################################
 
-# Chow test for covid period
+# Chow test for volume for covid period
 ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Items_Presc)) +  geom_line()
 
+acf(Ep_Drugs_Total$Total_Items_Presc, pl=FALSE) # auto correlation 
+
+acf(Ep_Drugs_Total$Total_Items_Presc) # auto correlation plot, some autocorrelation so Chow test results should be treated with some caution
 
 sctest(Ep_Drugs_Total$Total_Items_Presc ~ Ep_Drugs_Total$Date, type = "Chow", point = 30)
+
+
 
 # The Chow test attempts to determine if there is a structural break in the data at some point.
 # In this case, it is the volume of drugs before and after covid in the UK (point 30 or April 2020)
 # F = 2.9248, p-value = 0.06192.  We have insufficient evidence to reject the null of no structural break before and after covid
-
 
 # Chow test for NICE epilepsy guidelines April 2022
 
