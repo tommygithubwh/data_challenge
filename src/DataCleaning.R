@@ -18,7 +18,6 @@ PCN_CCG_Codes2 <- read.xlsx('data/CCG_TO_PCN.xlsx')
 CCG_IMDs <- read.csv('data/CCG_IMDs.csv')
 CCG_Lookup <- read.csv('data/CCG_lookup.csv') # CCG lookup to as different datasets have different formatting for CCGs and CCG names change occasionally
 
-
 # Data Cleaning PCN/CCGs/ICBs ---------------------------------------------
 
 ## PCNs to CCGs 
@@ -334,8 +333,12 @@ Covid_Data <- Before_Covid_Data %>%
 
 ## calculting percentage changes
 Covid_Data <- Covid_Data %>%
-  mutate(Percent_Cost = ifelse(Cost_Per_Year_AC > Cost_Per_Year_BC, ((Cost_Per_Year_AC / Cost_Per_Year_BC) - 1) * 100, -1 * ((1 - Cost_Per_Year_AC / Cost_Per_Year_BC)) * 100)) %>%
-  mutate(Percent_Vol = ifelse(Presc_Per_Year_AC > Presc_Per_Year_BC, ((Presc_Per_Year_AC / Presc_Per_Year_BC) - 1) * 100, -1 * ((1 - Presc_Per_Year_AC / Presc_Per_Year_BC)) * 100))
+  mutate(Percent_Cost = ifelse(Cost_Per_Year_AC > Cost_Per_Year_BC, ((Cost_Per_Year_AC / Cost_Per_Year_BC) - 1) * 100, -1 *
+    ((1 - Cost_Per_Year_AC / Cost_Per_Year_BC)) *
+    100)) %>%
+  mutate(Percent_Vol = ifelse(Presc_Per_Year_AC > Presc_Per_Year_BC, ((Presc_Per_Year_AC / Presc_Per_Year_BC) - 1) * 100, -1 *
+    ((1 - Presc_Per_Year_AC / Presc_Per_Year_BC)) *
+    100))
 
 ## arranging in descending order for the plots
 Covid_Data_presc <- Covid_Data %>%

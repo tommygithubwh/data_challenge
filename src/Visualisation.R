@@ -6,7 +6,7 @@ install.packages(setdiff(packages, rownames(installed.packages())))
 lapply(packages, library, character.only = TRUE, quietly = TRUE)
 rm(packages)
 
-source(file = "src/DataCleaning.R")
+source(file = "src/Analysis.R")
 # Create a heatmap (CCG based, England only so far). It can be used for any data in our.csv.
 # Detailed info on cartography here: https://search.r-project.org/CRAN/refmans/cartography/html/choroLayer.html
 shapefile <- readOGR("data/ccg", "Clinical_Commissioning_Groups_April_2020_FEB_EN")
@@ -53,7 +53,6 @@ display_map(ep_drugs_total_cost_shape, "Epilepsy drugs (total cost per CCG)", "C
 display_map(ep_drugs_total_presc_shape, "Epilepsy drugs (total number of prescriptions per CCG)", "Prescriptions/CCG", "blue.pal")
 
 ## Heat map before covid, heatmap after covid
-
 # Time series plots -------------------------------------------------------
 
 ## Time series plot of Costs over time (£1 million)
@@ -64,7 +63,6 @@ ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Cost / 1000000)) +
   theme_ipsum() +
   theme(axis.text.x = element_text(angle = 60, hjust = 1))
 
-
 ## Total prescriptions over time in england 
 ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Items_Presc)) +
   geom_line(color = "#69b3a2") +
@@ -72,7 +70,6 @@ ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Items_Presc)) +
   ylab("Total Prescriptions in England") +
   theme_ipsum() +
   theme(axis.text.x = element_text(angle = 60, hjust = 1))
-
 
 ## Prevalence over time in england
 ggplot(Ep_Prev_Total_Eng, aes(x = Year, y = Value)) +
@@ -85,7 +82,6 @@ ggplot(Ep_Prev_Total_Eng, aes(x = Year, y = Value)) +
               alpha = 0.1,
               linetype = "dashed",
               color = "grey")
-
 
 ## Prescriptions per 1000 people and prescription per case over time in england
 ggplot(Ep_Drugs_Total, aes(x = Date)) +
@@ -115,49 +111,105 @@ ggplot(Ep_Prev_Region, aes(x = Year, y = Prev, fill = Region)) +
 
 #Plots for change in prescriptions and costs before and after covid
 # Top ten CCGs with greatest % change in volume of prescriptions 
-ggplot(Covid_Data_presc %>% 
-         head(10), 
+ggplot(Covid_Data_presc %>%
+         head(10),
        aes(x = fct_rev(fct_reorder(CCG_Name, Percent_Vol)), y = Percent_Vol, fill = CCG_Name)) +
-  geom_col()+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+
-  labs( x = 'NHS CCG', y = 'Percentage change in prescriptions per year')+
-  scale_fill_discrete(name = "NHS CCG")+
+  geom_col() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x = 'NHS CCG', y = 'Percentage change in prescriptions per year') +
+  scale_fill_discrete(name = "NHS CCG") +
   ggtitle('Top Ten NHS CCGs: Increase in prescriptions before and after COVID-19 lockdown')
 
 ## bottom ten ccgs with lowest/most negative change in % volume of prescriptions 
-ggplot(Covid_Data_presc %>% 
-         tail(10), 
+ggplot(Covid_Data_presc %>%
+         tail(10),
        aes(x = fct_rev(fct_reorder(CCG_Name, Percent_Vol)), y = Percent_Vol, fill = CCG_Name)) +
-  geom_col()+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+
-  labs( x = 'NHS CCG', y = 'Percentage change in prescriptions per year')+
-  scale_fill_discrete(name = "NHS CCG")+
+  geom_col() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x = 'NHS CCG', y = 'Percentage change in prescriptions per year') +
+  scale_fill_discrete(name = "NHS CCG") +
   ggtitle('Bottom Ten NHS CCGs: Increase in prescriptions before and after COVID-19 lockdown')
 
 ## Top ten CCGs with the highest percentage change in cost 
-ggplot(Covid_Data_Cost %>% 
-         head(10), 
+ggplot(Covid_Data_Cost %>%
+         head(10),
        aes(x = fct_rev(fct_reorder(CCG_Name, Percent_Cost)), y = Percent_Cost, fill = CCG_Name)) +
-  geom_col()+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+
-  labs( x = 'NHS CCG', y = 'Percentage change in cost per year')+
-  scale_fill_discrete(name = "NHS CCG")+
+  geom_col() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x = 'NHS CCG', y = 'Percentage change in cost per year') +
+  scale_fill_discrete(name = "NHS CCG") +
   ggtitle('Top Ten NHS CCGs: change in cost before and after COVID-19 lockdown')
 
 ## lowest change in costs CCG
-ggplot(Covid_Data_Cost %>% 
-         tail(10), 
+ggplot(Covid_Data_Cost %>%
+         tail(10),
        aes(x = fct_rev(fct_reorder(CCG_Name, Percent_Cost)), y = Percent_Cost, fill = CCG_Name)) +
-  geom_col()+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+
-  labs( x = 'NHS CCG', y = 'Percentage change in cost per year')+
-  scale_fill_discrete(name = "NHS CCG")+
+  geom_col() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  labs(x = 'NHS CCG', y = 'Percentage change in cost per year') +
+  scale_fill_discrete(name = "NHS CCG") +
   ggtitle('Bottom Ten NHS CCGs: change in cost before and after COVID-19 lockdown')
+
+# basic graph with CIs
+plot(Predictions_Vol, main = "ARIMA forecast of anti-epileptic prescriptions", xlab = "Time (months)",
+     ylab = "Total anti-epileptic prescriptions per month")
+
+#Sarima model
+plot(Sarima_Vol) #Sarima model
+
+#forecast
+plot(Predictions_Vol_Sarima)
+
+# Chow test for volume for covid period
+ggplot(Ep_Drugs_Total, aes(x = Date, y = Total_Items_Presc)) + geom_line()
+
+# Scatter chart showing relationship between IMD and prescriptions per population
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD, y = Total_items_by_pop)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "IMD by prescription per population",
+       x = "Index of Multiple Deprivation (1=most deprived)",
+       y = "Prescriptions per population in 2022")
+
+# Scatter chart showing relationship between prevalence and prescriptions per population
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Prev, y = Total_items_by_pop)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Prescription per population by epilepsy prevalence",
+       x = "Prevalence per 1,000 people",
+       y = "Prescriptions per population in 2022")
+
+# Scatter chart showing relationship between health decile and prescriptions per population
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Health.Deprivation.and.Disability.Decile..where.1.is.most.deprived.10..of.LSOAs.
+  , y = Total_items_by_pop)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Health and disability decile by epilepsy prevalence",
+       x = "Health decile (1=most deprived)",
+       y = "Prescriptions per population in 2022")
+
+# Scatter chart showing relationship between IMD and prevalence
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = IMD
+  , y = Prev)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "IMD by epilepsy prevalence",
+       x = "Index of Multiple Deprivation (1=most deprived)",
+       y = "Prevalence per 1,000 people")
+
+# Scatter chart showing relationship between cost per prescription and epilepsy prevalence
+ggplot(data = Ep_Prev_Drugs_2022_unique, aes(x = Cost_per_prescription
+  , y = Prev)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Cost per prescription by epilepsy prevalence",
+       x = "Cost per prescription",
+       y = "Prevalence per 1,000 people")
