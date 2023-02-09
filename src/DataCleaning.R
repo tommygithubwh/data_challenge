@@ -303,7 +303,7 @@ After_Covid_Data <- Ep_Drugs_CCG %>%
   group_by(CCG_Name) %>% 
   mutate(Months = n_distinct(Date))
 
-After_Covid_Data1 <- aggregate(After_Covid_Data1[,3:4], by = list(After_Covid_Data1$CCG_Name), 
+After_Covid_Data1 <- aggregate(After_Covid_Data[,3:4], by = list(After_Covid_Data1$CCG_Name), 
                                FUN = sum)
 
 After_Covid_Data <- After_Covid_Data1 %>%
