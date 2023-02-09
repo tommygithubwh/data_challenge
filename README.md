@@ -10,6 +10,10 @@ b) Are there any other characteristics of each general practice’s population t
 
 c) Have patterns in prescribing changed after: (1) the start of the COVID-19 pandemic, or (2) the NICE 2022 guideline for epilepsy? 
 
+# How to run?
+
+Launch Visualisation.R 
+
 ##Sections
 
 ###1. Data 
