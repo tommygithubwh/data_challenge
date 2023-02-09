@@ -59,9 +59,10 @@ for (j in seq_len(ncol(CCG_ICB_Codes))) {
 ## Renaming columns
 colnames(Ep_Drugs_PCN)[2:5] <- c('PCN_Code', 'PCN_Name', 'Total_Items_Presc', 'Total_Cost')
 
+## selecting necessary columns
 Ep_Drugs_PCN <- Ep_Drugs_PCN[, 1:5]
 
-## Joining the datasets
+## Joining the datasets (PCN AND CCG CODES)
 Ep_Drugs_CCG <- Ep_Drugs_PCN %>%
   left_join(PCN_CCG_Codes, by = c('PCN_Code', 'PCN_Name'), all.x = TRUE) %>%
   dplyr::mutate(Date = as.Date(date))
@@ -127,18 +128,22 @@ colnames(Ep_Drugs_CCG) <- c('date', 'CCG_Name', 'Total_Items_Presc', 'Total_Cost
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   dplyr::mutate(CCG_Name = toupper(CCG_Name))
 
-table(Ep_Drugs_CCG$CCG_Name)
+## making area name upper case and selecting distinct 
 
 List_Of_CCGS <- Ep_Prev_CCG %>%
   dplyr::mutate(CCG_Name_Prev = toupper(Area.Name)) %>%
   select(CCG_Name_Prev) %>%
   distinct()
 
+## getting rid of unwanted characters
+
 Ep_Drugs_CCG$CCG_Name <- gsub('ICB - ([0-9].*[A-Z]*|[A-Z]*[0-9]*[A-Z]*[0-9]*[A-Z]*)$', 'CCG', as.character(Ep_Drugs_CCG$CCG_Name))
 
 ## Adding Index multiple deprivation and Health Deprivation and Disability Decile to EP_Drugs_CCG
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   left_join(CCG_IMDs, by = c('CCG_Name' = 'CCG_Name'))
+
+## creating date format
 
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   dplyr::mutate(Year = year(date), Date = as.Date(date))
@@ -173,6 +178,7 @@ PCN_CCG_Codes3 <- PCN_CCG_Codes3 %>%
                 PCN_Population = `PCN adjusted population 1 Jan 22`) %>%
   select(CCG_Name, PCN_Population)
 
+## summing PCN population to get CCG population
 PCN_CCG_Codes3 <- PCN_CCG_Codes3 %>%
   group_by(CCG_Name) %>%
   dplyr::mutate(CCG_Population = sum(as.numeric(PCN_Population))) %>%
@@ -185,11 +191,13 @@ Ep_Prev_CCG <- Ep_Prev_CCG %>%
          Count, Denominator, Time.period) %>%
   dplyr::rename(CCG_Name = Area.Name)
 
+## Inlcuding confidence intervals for ccg prevalence
 PCN_CCG_Codes3 <- PCN_CCG_Codes3 %>%
   dplyr::mutate(Lower.CI.95.0.limit = NA, Upper.CI.95.0.limit = NA, Count = NA, Time.period = 2022, Prev = NA) %>%
   select(-PCN_Population, CCG_Name, Prev, Lower.CI.95.0.limit, Upper.CI.95.0.limit,
          Count, CCG_Population, Time.period)
 
+## renaming columns 
 Ep_Prev_CCG <- Ep_Prev_CCG %>%
   dplyr::rename(CCG_Population = Denominator, Prev = Value) %>%
   select(CCG_Name, CCG_Population, Lower.CI.95.0.limit, Upper.CI.95.0.limit, Count, Time.period, Prev)
@@ -204,6 +212,7 @@ Ep_Prev_CCG <- Ep_Prev_CCG %>%
 CCG_ICB_Codes <- CCG_ICB_Codes %>%
   mutate_at(vars(Region, ICB_Name, CCG_Name), ~toupper(.))
 
+## selecting and renaming columns 
 Ep_Drugs_ICB <- Ep_Drugs_ICB[, -c(2, 6, 7)]
 
 colnames(Ep_Drugs_ICB) <- c('Date', 'ICB_Name', 'Total_Presc', 'Total_Cost')
@@ -228,9 +237,11 @@ Ep_Prev_ICB$ICB_Name <- gsub('INTEGRATED CARE BOARD', 'ICB', Ep_Prev_ICB$ICB_Nam
 Ep_Drugs_ICB <- Ep_Drugs_ICB %>%
   mutate(Year = as.numeric(substr(Date, 1, 4)))
 
+## Aggreating ICB drugs to england level
 Ep_Drugs_ICB_Year <- aggregate(Ep_Drugs_ICB[, 3:4], by = list(Ep_Drugs_ICB$Year,
                                                               Ep_Drugs_ICB$ICB_Name), FUN = sum)
 
+## renaming columns
 colnames(Ep_Drugs_ICB_Year)[1:2] <- c('Year', 'ICB_Name')
 
 Ep_Prev_ICB <- Ep_Prev_ICB %>%
@@ -241,6 +252,7 @@ Ep_Drugs_ICB_Year <- Ep_Drugs_ICB_Year %>%
   left_join(CCG_ICB_Codes %>%
               select(ICB_Name, Region))
 
+# deleting unneeded characters
 Ep_Prev_ICB$ICB_Name <- substr(Ep_Prev_ICB$ICB_Name, 1, nchar(Ep_Prev_ICB$ICB_Name) - 1)
 
 Ep_Drugs_ICB <- Ep_Drugs_ICB %>%
@@ -276,14 +288,18 @@ colnames(Ep_Drugs_Region_Year)[1:2] <- c('Year', 'Region')
 
 ## difference before and after covid
 ## CCGs that spent the most before covid
+
+## data from before covid
 Before_Covid_Data <- Ep_Drugs_CCG %>%
   filter(Date < '2020-03-29') %>%
   group_by(CCG_Name) %>%
   mutate(Months = n_distinct(Date))
 
+## aggregating for each ccg over this time period
 Before_Covid_Data1 <- aggregate(Before_Covid_Data[, 3:4], by = list(Before_Covid_Data$CCG_Name),
                                 FUN = sum)
 
+## calculating yearly rates
 Before_Covid_Data <- Before_Covid_Data1 %>%
   dplyr::rename(CCG_Name = Group.1) %>%
   left_join(Before_Covid_Data %>%
@@ -292,6 +308,7 @@ Before_Covid_Data <- Before_Covid_Data1 %>%
          Cost_Per_Year_BC = (Total_Cost / Months) * 12) %>%
   distinct(CCG_Name, .keep_all = TRUE)
 
+## same for after covid
 After_Covid_Data <- Ep_Drugs_CCG %>%
   filter(Date > '2020-08-14') %>%
   group_by(CCG_Name) %>%
@@ -308,22 +325,26 @@ After_Covid_Data <- After_Covid_Data1 %>%
          Cost_Per_Year_AC = (Total_Cost / Months) * 12) %>%
   distinct(CCG_Name, .keep_all = TRUE)
 
+## creating one dataset for covid data 
 Covid_Data <- Before_Covid_Data %>%
   left_join(After_Covid_Data %>%
               select(CCG_Name, Presc_Per_Year_AC, Cost_Per_Year_AC)) %>%
   mutate(Change_Presc = Presc_Per_Year_AC - Presc_Per_Year_BC,
          Change_Cost = Cost_Per_Year_AC - Cost_Per_Year_BC)
 
+## calculting percentage changes
 Covid_Data <- Covid_Data %>%
   mutate(Percent_Cost = ifelse(Cost_Per_Year_AC > Cost_Per_Year_BC, ((Cost_Per_Year_AC / Cost_Per_Year_BC) - 1) * 100, -1 * ((1 - Cost_Per_Year_AC / Cost_Per_Year_BC)) * 100)) %>%
   mutate(Percent_Vol = ifelse(Presc_Per_Year_AC > Presc_Per_Year_BC, ((Presc_Per_Year_AC / Presc_Per_Year_BC) - 1) * 100, -1 * ((1 - Presc_Per_Year_AC / Presc_Per_Year_BC)) * 100))
 
+## arranging in descending order for the plots
 Covid_Data_presc <- Covid_Data %>%
   arrange(desc(Percent_Vol))
 
 Covid_Data_Cost <- Covid_Data %>%
   arrange(desc(Percent_Cost))
 
+## seperate datasets for the plots and removing NHS and CCG from names to minimise length of axis labels 
 Covid_Data_Cost$CCG_Name <- substr(Covid_Data_Cost$CCG_Name, 1, nchar(Covid_Data_Cost$CCG_Name) - 4)
 Covid_Data_Cost$CCG_Name <- substr(Covid_Data_Cost$CCG_Name, 4, nchar(Covid_Data_Cost$CCG_Name))
 
