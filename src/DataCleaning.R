@@ -299,7 +299,7 @@ Before_Covid_Data <- Before_Covid_Data1 %>%
          Cost_Per_Year_BC = (Total_Cost/Months)*12) %>% 
   distinct(CCG_Name, .keep_all = TRUE)
 
-After_Covid_Data1 <- Ep_Drugs_CCG %>% 
+After_Covid_Data <- Ep_Drugs_CCG %>% 
   filter(Date > '2020-08-14')%>% 
   group_by(CCG_Name) %>% 
   mutate(Months = n_distinct(Date))
@@ -324,11 +324,15 @@ Covid_Data <- Before_Covid_Data %>%
   mutate(Change_Presc = Presc_Per_Year_AC - Presc_Per_Year_BC, 
         Change_Cost = Cost_Per_Year_AC - Cost_Per_Year_BC)
 
+Covid_Data <- Covid_Data %>% 
+  mutate(Percent_Cost = ifelse(Cost_Per_Year_AC > Cost_Per_Year_BC, ((Cost_Per_Year_AC/Cost_Per_Year_BC)-1)*100, -1*((1 -Cost_Per_Year_AC/Cost_Per_Year_BC))*100)) %>% 
+  mutate(Percent_Vol = ifelse(Presc_Per_Year_AC > Presc_Per_Year_BC, ((Presc_Per_Year_AC/Presc_Per_Year_BC)-1)*100, -1*((1 -Presc_Per_Year_AC/Presc_Per_Year_BC))*100))
+
 Covid_Data_presc <- Covid_Data %>% 
-  arrange(desc(Change_Presc))
+  arrange(desc(Percent_Vol))
 
 Covid_Data_Cost <- Covid_Data %>% 
-  arrange(desc(Change_Cost))
+  arrange(desc(Percent_Cost))
 
 Covid_Data_Cost$CCG_Name <- substr(Covid_Data_Cost$CCG_Name, 1, nchar(Covid_Data_Cost$CCG_Name) - 4)
 Covid_Data_Cost$CCG_Name <- substr(Covid_Data_Cost$CCG_Name, 4, nchar(Covid_Data_Cost$CCG_Name))
