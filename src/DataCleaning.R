@@ -143,9 +143,8 @@ Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
 Ep_Drugs_CCG <- Ep_Drugs_CCG %>%
   dplyr::mutate(Year = year(date), Date = as.Date(date))
 
-
 ## Total prescriptions 
-Ep_Drugs_Total <- aggregate(Ep_Drugs_CCG[,3:4], by = list(Ep_Drugs_CCG$date), FUN = sum)
+Ep_Drugs_Total <- aggregate(Ep_Drugs_CCG[, 3:4], by = list(Ep_Drugs_CCG$date), FUN = sum)
 
 Ep_Drugs_Total <- Ep_Drugs_Total %>%
   dplyr::mutate(Date = as.Date(Group.1)) %>%
@@ -159,8 +158,8 @@ Ep_Prev_Total_Eng <- Ep_Prev_CCG %>%
 
 Ep_Drugs_Total <- Ep_Drugs_Total %>%
   left_join(Ep_Prev_Total_Eng %>%
-               select(13:19, Year) %>%
-               dplyr::mutate(Year = as.numeric(Year))) 
+              select(13:19, Year) %>%
+              dplyr::mutate(Year = as.numeric(Year)))
 
 Ep_Drugs_Total <- Ep_Drugs_Total %>%
   dplyr::mutate(Presc_Per_Cases = Total_Items_Presc / Count,
@@ -199,7 +198,6 @@ Ep_Prev_CCG <- Ep_Prev_CCG %>%
   dplyr::mutate(Time.period = as.numeric(substr(Time.period, 1, 4))) %>%
   bind_rows(PCN_CCG_Codes)
 
-
 # Drugs per region  -------------------------------------------------------
 
 ## Want to look at total items/cost by region
@@ -210,7 +208,7 @@ Ep_Drugs_ICB <- Ep_Drugs_ICB[, -c(2, 6, 7)]
 
 colnames(Ep_Drugs_ICB) <- c('Date', 'ICB_Name', 'Total_Presc', 'Total_Cost')
 
-## Replacing integrated care board with ICB 
+# Replacing integrated care board with ICB
 Ep_Drugs_ICB$ICB_Name <- gsub('INTEGRATED CARE BOARD', 'ICB', Ep_Drugs_ICB$ICB_Name)
 
 Ep_Drugs_ICB <- Ep_Drugs_ICB %>%
@@ -271,64 +269,59 @@ Ep_Drugs_Region_Year <- aggregate(Ep_Drugs_ICB_Year[, 3:4], by = list(Ep_Drugs_I
                                                                       Ep_Drugs_ICB_Year$Region),
                                   FUN = sum)
 
-colnames(Ep_Drugs_Region_Year)[1:2] <- c('Year', 'Region') 
+colnames(Ep_Drugs_Region_Year)[1:2] <- c('Year', 'Region')
 
 
 # Drugs -------------------------------------------------------------------
 
 ## difference before and after covid
 ## CCGs that spent the most before covid
-
-
-
-Before_Covid_Data <- Ep_Drugs_CCG %>% 
-  filter(Date < '2020-03-29') %>% 
-  group_by(CCG_Name) %>% 
+Before_Covid_Data <- Ep_Drugs_CCG %>%
+  filter(Date < '2020-03-29') %>%
+  group_by(CCG_Name) %>%
   mutate(Months = n_distinct(Date))
 
-
-Before_Covid_Data1 <- aggregate(Before_Covid_Data[,3:4], by = list(Before_Covid_Data$CCG_Name), 
-                               FUN = sum)
+Before_Covid_Data1 <- aggregate(Before_Covid_Data[, 3:4], by = list(Before_Covid_Data$CCG_Name),
+                                FUN = sum)
 
 Before_Covid_Data <- Before_Covid_Data1 %>%
-  dplyr::rename(CCG_Name = Group.1) %>% 
-  left_join(Before_Covid_Data %>% 
-              select(CCG_Name, Months)) %>% 
-  mutate(Presc_Per_Year_BC = (Total_Items_Presc/Months)*12, 
-         Cost_Per_Year_BC = (Total_Cost/Months)*12) %>% 
+  dplyr::rename(CCG_Name = Group.1) %>%
+  left_join(Before_Covid_Data %>%
+              select(CCG_Name, Months)) %>%
+  mutate(Presc_Per_Year_BC = (Total_Items_Presc / Months) * 12,
+         Cost_Per_Year_BC = (Total_Cost / Months) * 12) %>%
   distinct(CCG_Name, .keep_all = TRUE)
 
-After_Covid_Data <- Ep_Drugs_CCG %>% 
-  filter(Date > '2020-08-14')%>% 
-  group_by(CCG_Name) %>% 
+After_Covid_Data <- Ep_Drugs_CCG %>%
+  filter(Date > '2020-08-14') %>%
+  group_by(CCG_Name) %>%
   mutate(Months = n_distinct(Date))
 
-After_Covid_Data1 <- aggregate(After_Covid_Data[,3:4], by = list(After_Covid_Data$CCG_Name), 
+After_Covid_Data1 <- aggregate(After_Covid_Data[, 3:4], by = list(After_Covid_Data$CCG_Name),
                                FUN = sum)
 
 After_Covid_Data <- After_Covid_Data1 %>%
-  dplyr::rename(CCG_Name = Group.1) %>% 
-  left_join(After_Covid_Data %>% 
-              dplyr::select(CCG_Name, Months)) %>% 
-  mutate(Presc_Per_Year_AC = (Total_Items_Presc/Months)*12, 
-         Cost_Per_Year_AC = (Total_Cost/Months)*12 ) %>%
+  dplyr::rename(CCG_Name = Group.1) %>%
+  left_join(After_Covid_Data %>%
+              dplyr::select(CCG_Name, Months)) %>%
+  mutate(Presc_Per_Year_AC = (Total_Items_Presc / Months) * 12,
+         Cost_Per_Year_AC = (Total_Cost / Months) * 12) %>%
   distinct(CCG_Name, .keep_all = TRUE)
-  
-  
-Covid_Data <- Before_Covid_Data %>% 
-  left_join(After_Covid_Data %>% 
-              select(CCG_Name, Presc_Per_Year_AC, Cost_Per_Year_AC)) %>% 
-  mutate(Change_Presc = Presc_Per_Year_AC - Presc_Per_Year_BC, 
-        Change_Cost = Cost_Per_Year_AC - Cost_Per_Year_BC)
 
-Covid_Data <- Covid_Data %>% 
-  mutate(Percent_Cost = ifelse(Cost_Per_Year_AC > Cost_Per_Year_BC, ((Cost_Per_Year_AC/Cost_Per_Year_BC)-1)*100, -1*((1 -Cost_Per_Year_AC/Cost_Per_Year_BC))*100)) %>% 
-  mutate(Percent_Vol = ifelse(Presc_Per_Year_AC > Presc_Per_Year_BC, ((Presc_Per_Year_AC/Presc_Per_Year_BC)-1)*100, -1*((1 -Presc_Per_Year_AC/Presc_Per_Year_BC))*100))
+Covid_Data <- Before_Covid_Data %>%
+  left_join(After_Covid_Data %>%
+              select(CCG_Name, Presc_Per_Year_AC, Cost_Per_Year_AC)) %>%
+  mutate(Change_Presc = Presc_Per_Year_AC - Presc_Per_Year_BC,
+         Change_Cost = Cost_Per_Year_AC - Cost_Per_Year_BC)
 
-Covid_Data_presc <- Covid_Data %>% 
+Covid_Data <- Covid_Data %>%
+  mutate(Percent_Cost = ifelse(Cost_Per_Year_AC > Cost_Per_Year_BC, ((Cost_Per_Year_AC / Cost_Per_Year_BC) - 1) * 100, -1 * ((1 - Cost_Per_Year_AC / Cost_Per_Year_BC)) * 100)) %>%
+  mutate(Percent_Vol = ifelse(Presc_Per_Year_AC > Presc_Per_Year_BC, ((Presc_Per_Year_AC / Presc_Per_Year_BC) - 1) * 100, -1 * ((1 - Presc_Per_Year_AC / Presc_Per_Year_BC)) * 100))
+
+Covid_Data_presc <- Covid_Data %>%
   arrange(desc(Percent_Vol))
 
-Covid_Data_Cost <- Covid_Data %>% 
+Covid_Data_Cost <- Covid_Data %>%
   arrange(desc(Percent_Cost))
 
 Covid_Data_Cost$CCG_Name <- substr(Covid_Data_Cost$CCG_Name, 1, nchar(Covid_Data_Cost$CCG_Name) - 4)
@@ -336,4 +329,3 @@ Covid_Data_Cost$CCG_Name <- substr(Covid_Data_Cost$CCG_Name, 4, nchar(Covid_Data
 
 Covid_Data_presc$CCG_Name <- substr(Covid_Data_presc$CCG_Name, 1, nchar(Covid_Data_presc$CCG_Name) - 4)
 Covid_Data_presc$CCG_Name <- substr(Covid_Data_presc$CCG_Name, 4, nchar(Covid_Data_presc$CCG_Name))
-
