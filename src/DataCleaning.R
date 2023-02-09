@@ -299,7 +299,7 @@ Before_Covid_Data <- Before_Covid_Data1 %>%
          Cost_Per_Year_BC = (Total_Cost/Months)*12) %>% 
   distinct(CCG_Name, .keep_all = TRUE)
 
-After_Covid_Data <- Ep_Drugs_CCG %>% 
+After_Covid_Data1 <- Ep_Drugs_CCG %>% 
   filter(Date > '2020-08-14')%>% 
   group_by(CCG_Name) %>% 
   mutate(Months = n_distinct(Date))
